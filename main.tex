@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{amsthm}
+
+ 
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+ 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newcommand{\EV}[1] {
+  \mathbb{E}\left[#1\right]}
+\newcommand{\sign} {
+  \operatorname{sign}}
+  \DeclareMathOperator\caret{\raisebox{1ex}{$\scriptstyle\wedge$}}
+
+\title{Generalized Linear Bandits}
+\author{julian.zimmert }
+\date{July 2016}
+
+\begin{document}
+
+\maketitle
+\section{Generalized Linear Model}
+The arms are denoted as $x_i \in \mathbb{R}^d$, whose features are specific to each arm and known to the agent.\\
+There exists a known link function $\mu:\mathbb{R}\rightarrow\mathbb{R}$. $\mu$ is monotonously increasing and satisfies for any $x<y$: $c_\mu (y-x)\leq\mu(y)-\mu(x)\leq \kappa_\mu(y-x)$. For some unknown parameter vector $\theta_*\in\mathbb{R}^d$ the payoffs received at time $t$ are
+\begin{align}
+R_t = \mu(x_t^T\theta_*) + \eta_t,
+\end{align}
+where $\eta_t$ is conditionally R-subgaussian for a fixed $R>0$. This implies that
+\begin{align}
+    \mathbb{E}[R_t|X_t=x_t] = \mu(x_t^T\theta_*).
+\end{align}
+
+ 
+\input{general_lower_bound}
+ 
+%% \input{pseudo_maximum_likelihood_lower_bound} %% if we want to show that there is a gap between Least Square and pseudo ML
+
+\input{upper_bound}
+
+\end{document}
