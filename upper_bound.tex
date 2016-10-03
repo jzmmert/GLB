@@ -74,12 +74,23 @@ Finally we get
 \subsubsection{$d=2$}
 \color{red}This is the most important gap. It holds for $\mu = (x-1+\epsilon)_+$, but I haven't succeeded in a general proof.\color{black}
 \begin{proposition}
-Given any valid $\mu$ with the additional constrain $\int_0^{||\theta_*||}\dot{\mu}(x)\,dx=\epsilon$, then for $d=2$ it holds 
+Let $d=2$. Then for any valid $\mu \in M$, it holds that 
 \begin{align*}
-    L(\tilde{\theta})-L(\theta_*) \geq \kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\epsilon^{-\frac{3}{2}}
+    L(\tilde{\theta})-L(\theta_*) \geq \kappa^{-\frac{1}{2}}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))(\mu(1)-\mu(-1))^{\frac{3}{2}}
 \end{align*}
 \end{proposition}
-\begin{proof}
+The proof follows from the following Lemma
+\begin{lemma}
+    For any $\mu\in M_1$ and $z \in [0,1]$, it holds that
+\begin{align*}
+\int_{-1}^1&\left(\mu\left(zx + \iz\ix\right)-\mu\left(zx - \iz\ix\right)\right)^2\frac{1}{\ix}\,dx \\
+&\geq c \left(\mu(1)-\mu(z^2)\right)\left(\mu(1)-\mu(-1)\right)^\frac{3}{2}\\
+& \Leftrightarrow\\
+\int_{-1}^1&(1-z^2)\left(\int_{-1}^1\dot{\mu}\left(zx+\iz\ix y\right)\,dy\right)^2\ix\,dx \\
+&\geq c \left(\int_{z^2}^1\dot{\mu}(x)\,dx\right)\left(\int_{-1}^1\dot{\mu}(x)\,dx\right)^\frac{3}{2}
+\end{align*}
+\end{lemma}
+\begin{proof}[Proof of Theorem 6]
 
 \begin{align*}
     L(\tilde{\theta})-L(\theta_*)
@@ -88,30 +99,10 @@ Given any valid $\mu$ with the additional constrain $\int_0^{||\theta_*||}\dot{\
     =&2\int_{0}^{\pi}\left(\int_{-\sin(x)|\theta_2|}^{\sin(x)|\theta_2|}\dot{\mu}(\cos(x)|\theta_1|+y)\,dy\right)^2\, dx\\
     =&2|\theta_2|^2\int_{0}^{\pi}\left(\int_{-1}^{1}\dot{\mu}(\cos(x)|\theta_1|+\sin(x)|\theta_2|y)\,dy\right)^2\sin(x)^2\, dx\\
     =&2|\theta_2|^2\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x|\theta_1|+\sqrt{1-x^2}|\theta_2|y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
-    \geq &2|\theta_2|^2 \inf_{\beta}\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x\sin(\beta)||\theta_*||+\sqrt{1-x^2}\cos(\beta)||\theta_*||y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
-    =&:2|\theta_2|^2J(\mu,||\theta_*||)\\
-    =&(x_*^T\theta_*-\hat{x}^T\theta_*) J(\mu,||\theta_*||)\\
-    \geq&\kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) J(\mu,||\theta_*||)\\
+...
 \end{align*}
-\color{red}TODO: bound $J$\color{black}
 \end{proof}
-With these lemmas and the proposition, we can proof the theorem for $d=2$.\\
-\begin{proof}
-    \begin{align*}
-        \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}) \geq \kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\epsilon^{-\frac{3}{2}}\\
-        (\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) \leq \kappa\epsilon^{\frac{3}{2}}\frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
-    \end{align*}
-    Setting $n= T\caret{\frac{3}{5}}\epsilon^{-1}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))\caret\frac{2}{5}$, and by using $(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) \leq \epsilon$, we get
-    \begin{align*}
-        (\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) &\leq \min\left\{\epsilon, \epsilon^{\frac{5}{2}}T^{-\frac{3}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{3}{5}}\right\}\\
-        &\leq T^{-\frac{2}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{2}{5}}
-    \end{align*}
-    The total regret is the sum of exploration and exploration phase, therefore
-    \begin{align*}
-        \operatorname{Reg}(T) &\leq n\cdot\epsilon + T\cdot(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\\
-        &\leq 2 T^{\frac{3}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{2}{5}}
-    \end{align*}
-\end{proof}
+
 \subsection{$d\geq 3$}
 We express the Expectation in terms of integrals
 \begin{align*}
