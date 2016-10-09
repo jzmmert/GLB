@@ -37,62 +37,86 @@
 \begin{abstract}
 Previous work on generalized linear bandit (GLB) suggested that algorithms based on optimisn 
 can achieve a $\sqrt{T}$-regret analogous to the linear bandit setting. We argue however, 
-that these results are rather asympotic results, as they include generally huge constants 
+that these results should be treated as asymptoic results, as they include generally huge constants 
 that might even be a priori unknown. Our novel lower bound for GLB proves that these constants are not
 mere artifacts of the analysis, but that the regret might be as large as $\Omega(\frac{1}{2}+\frac{d-1}{2d+6})$.
 We prove that this lower bound has a matching upper bound up to log factors on a finite time setting with unit ball arms.
 \end{abstract}
 
-\section{GENERAL FORMATTING INSTRUCTIONS}
+\section{Introduction}
 
-Both submitted and camera-ready versions of the paper are 8 pages,
-plus any additional pages needed for references.
+The K-armed bandit problem is an extensively studied problem in online learning \ref. 
+An agents choses one of the K arms at each timesteps and observes a reward that depends on the selected action.
+The agent tries to play a strategy, that maximizes the sum of rewards. 
+This setting is extended to problems where the arms exhibit a structure. 
+That means playing one arm might provide information about the reward distribution for arms that were never played.
+A basic setting of this kind, which received a lot of attention, are linear bandits \ref.
+It is assumed that each arm has a feature vector $x_i$ and the mean reward observed when playing arm $i$ is given by $x_i^T\theta_*$, while the derivation from the mean is governed by sub-gaussian noise.
+The optimal strategy needs to carefully balance between playing arms to gain information about the reward structure (Exploration) and commiting to arms which are most promising given the available information (Exploitation).
+Lower bounds show that this 
 
-Papers are in 2 columns with the overall line width of 6.75~inches (41~picas). Each column is 3.25~inches wide (19.5~picas).  The space
-between the columns is .25~inches wide (1.5~picas).  The left margin is 1~inch (6~picas).  Use 10~point type with a vertical spacing of
-11~points. 
 
-Paper title is 16~point, caps/lc, bold, centered between 2~horizontal rules.  Top rule is 4~points thick and bottom rule is 1~point thick.
-Allow 1/4~inch space above and below title to rules.
+Linear bandits were further extended to generalized linear bandits (GLB) in 
+ 
+In the classical K-armed bandit problem, an agent selects at each time step one of the K arms and
+receives a reward that depends on the chosen action. The aim of the agent is to choose the sequence
+of arms to be played so as to maximize the cumulated reward. There is a fundamental trade-off
+between gathering experimental data about the reward distribution (exploration) and exploiting the
+arm which seems to be the most promising.
+In the basic multi-armed bandit problem, also called the independent bandits problem, the
+rewards are assumed to be random and distributed independently according to a probability
+distribution that is specific to each arm –see [1, 2, 3, 4] and references therein. Recently, structured
+bandit problems in which the distributions of the rewards pertaining to each arm are connected
+by a common unknown parameter have received much attention [5, 6, 7, 8, 9]. This model is
+motivated by the many practical applications where the number of arms is large, but the payoffs are
+interrelated. Up to know, two different models were studied in the literature along these lines. In
+one model, in each times step, a side-information, or context, is given to the agent first. The payoffs
+of the arms depend both on this side information and the index of the arm. Thus the optimal arm
+changes with the context [5, 6, 9]. In the second, simpler model, that we are also interested in here,
+there is no side-information, but the agent is given a model that describes the possible relations
+\section{Problem setting}
 
-Author descriptions are center-justified, initial caps.  The lead
-author is to be listed first (left-most), and the Co-authors are set
-to follow.  If up to three authors, use a single row of author
-descriptions, each one center-justified, and all set side by side;
-with more authors or unusually long names or institutions, use more
-rows.  (But, do not include author names in the initial double-blind
-submission!  Instead leave a row of ``Anonymous Author'' descriptions
-as above.)
+\section{Lower bounds}
 
-Use one-half line space between paragraphs, with no indent.
+We now present the main result of the paper. The general lower bound proofs the claim that the constants are not mere artifacts of the analysis, while the algorithm dependent bound proofs that there is an unsuperable gap when using the pseudo MLE for subgaussian noise.
 
-\section{FIRST LEVEL HEADINGS}
+\subsection{Algorithm independent bound}
 
-First level headings are all caps, flush left, bold, and in point size
-12. Use one line space before the first level heading and one-half line space
-after the first level heading.
+The exponent $\frac{}{}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
+In real world application, we typically deal with relatively large dimensions. 
+Unless we are very careful about the chosen link function, it might be impossible to learn anything meaningfull in a given time.
+That is why we distinguish in \ref{upperBounds} between different families of link functions, to provide safe-to-use applications.
 
-\subsection{Second Level Heading}
+\subsection{Pseudo Maximum-Likelihood based lower bound}
+For simplicity, we assume a simple Explore then Commit algorithm. 
+We show that for any time horizon $T$, we can construct a problem where with constant probability the pseudo MLE choses an arm not better than random.
+During the exploration, we suffer an regret even larger than what the general lower bound predicts.
 
-Second level headings are initial caps, flush left, bold, and in point
-size 10. Use one line space before the second level heading and one-half line
-space after the second level heading.
+\section{Upper bounds}\label{upperBounds}
+The lower bound given in the previous section is of a relatively odd nature. 
+To our best knowledge, the hasn't been a similar exponent derived for any bandit related lower bound.
+This naturally raises the question, whether this is even a tight lower bound.
+While for practical purposes, this is of little relevance because it is already prohibitive with the existing bound, it is still of academic interest.
+Secondly, it is essential for provide well behaving function that are guaranteed to suffer $\sqrt{T}$ regret instead.
 
-\subsubsection{Third Level Heading}
+We are not yet able to provide a complete answer to these question. 
+Based on a slightly simplified setting, we can show that
+\begin{itemize}
+\item the lower bound is indeed tight up to log factors
+\item symmetric convex-concave link functions are safe-to-use
+\end{itemize}
 
-Third level headings are flush left, initial caps, bold, and in point
-size 10. Use one line space before the third level heading and one-half line
-space after the third level heading.
-
-\paragraph{Fourth Level Heading}
-
-Fourth level headings must be flush left, initial caps, bold, and
-Roman type.  Use one line space before the fourth level heading, and
-place the section text immediately after the heading with no line
-break, but an 11 point horizontal space.
-
-\subsection{CITATIONS, FIGURES, REFERENCES}
-
+\paragraph{Restrictions}
+We believe the results hold even without further restrictions, but removing them would complicate the proofs to a point that would burst all limits of our appendix.
+In this section, we assume that
+\begin{itemize}
+\item the arms consists of the $d$-dimensional unit ball
+\item $||\theta_*||$ is known.
+\item The derivative $\dot{\mu}$ is axis symmetric and monotonous
+\end{itemize}
+\subsection{concave-convex link functions}
+We will first 
+\subsection{convex-concave link functions}
 
 \subsubsection{Citations in Text}
 
