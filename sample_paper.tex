@@ -9,7 +9,13 @@
 % headings for the authors names, plus a copyright note at the end of
 % the first column of the first page.
 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{amsthm}
 
+\newcommand{\Reg} {
+  \operatorname{Reg}}
 \begin{document}
 
 % If your paper is accepted and the title of your paper is very long,
@@ -35,9 +41,9 @@
 \aistatsaddress{ Humboldt University of Berlin \And University of Alberta  } ]
 
 \begin{abstract}
-Previous work on generalized linear bandit (GLB) suggested that algorithms based on optimisn 
+Previous work on generalized linear bandits (GLB) suggested that algorithms based on optimism 
 can achieve a $\sqrt{T}$-regret analogous to the linear bandit setting. We argue however, 
-that these results should be treated as asymptoic results, as they include generally huge constants 
+that these results should be treated as asymptotic results, as they include generally huge constants 
 that might even be a priori unknown. Our novel lower bound for GLB proves that these constants are not
 mere artifacts of the analysis, but that the regret might be as large as $\Omega(\frac{1}{2}+\frac{d-1}{2d+6})$.
 We prove that this lower bound has a matching upper bound up to log factors on a finite time setting with unit ball arms.
@@ -45,40 +51,58 @@ We prove that this lower bound has a matching upper bound up to log factors on a
 
 \section{Introduction}
 
-The K-armed bandit problem is an extensively studied problem in online learning \ref. 
-An agents choses one of the K arms at each timesteps and observes a reward that depends on the selected action.
-The agent tries to play a strategy, that maximizes the sum of rewards. 
-This setting is extended to problems where the arms exhibit a structure. 
-That means playing one arm might provide information about the reward distribution for arms that were never played.
-A basic setting of this kind, which received a lot of attention, are linear bandits \ref.
-It is assumed that each arm has a feature vector $x_i$ and the mean reward observed when playing arm $i$ is given by $x_i^T\theta_*$, while the derivation from the mean is governed by sub-gaussian noise.
-The optimal strategy needs to carefully balance between playing arms to gain information about the reward structure (Exploration) and commiting to arms which are most promising given the available information (Exploitation).
-Lower bounds show that this 
+We are concerned about the problem of general linear bandits (GLB) which are an extension of linear bandits that generalize the classical K-armed bandit problem.
+In the K-armed bandit problem, an agent selects one out of K possible arms at each time and immediately observes a reward.
+The reward depends only on the selected arm and is assumed to be drawn out of a probability distribution. 
+The means of the distributions are unknown and independent of each other, but the tails are all assumed to be sub-Gaussian.
+In these problems, the agent is faced with a fundamental trade-off between playing arms to gain information about the reward structure (Exploration) and chooses the arm that is most promising given the available information (Exploitation).
+For linear bandits, we model an an underlying structure that links the mean rewards for different arms. 
+In this setting, each arm is attached to a $d$-dimensional feature vector $x$ and the mean reward is given by $x^T\theta_*$, for an unknown parametrization $\theta_*$.
+Because this allows to infer information about arms that were never played, meaningful results exist even for infinitely many arms.
+GLB also assumes a feature structure, but the mean reward is $\mu(x^T\theta_*)$ for a non-decreasing link function $\mu$.
+
+For both the K-armed bandit as well as the linear bandit problems, algorithms with favourable theoretical properties exist. The regret, that is the accumulated difference of rewards between playing the optimal arm at each time-step and following the algorithm, is bounded by $\tilde{\mathcal{O}}(\sqrt{T})$ with high probability. 
+Existing proofs for lower bounds show that improvement is impossible for all except constants and log factors.
+An analogous algorithm for GLB also guarantees $\tilde{\mathcal{O}}(\sqrt{T})$ regret, but we see two downsides of this result. First of all, it needs to assume that the derivative of $\mu$ is lower bounded away from $0$. $\dot{\mu}\geq c_\mu > 0$. 
+Secondly, the bound requires two constants that might get extremely large, making this result more asymptotic in nature. 
+We are showing in this work that these constants are not mere artifacts of the analysis.
+Worst still, we show that the $T$ dependency is greater than $\sqrt{T}$ once we do not lower bound $\dot{\mu}$.
+Additionally we are going to prove that the estimator of $\theta_*$ ,used in the work of \cite{}, is fundamentally sub-optimal.
 
 
-Linear bandits were further extended to generalized linear bandits (GLB) in 
- 
-In the classical K-armed bandit problem, an agent selects at each time step one of the K arms and
-receives a reward that depends on the chosen action. The aim of the agent is to choose the sequence
-of arms to be played so as to maximize the cumulated reward. There is a fundamental trade-off
-between gathering experimental data about the reward distribution (exploration) and exploiting the
-arm which seems to be the most promising.
-In the basic multi-armed bandit problem, also called the independent bandits problem, the
-rewards are assumed to be random and distributed independently according to a probability
-distribution that is specific to each arm –see [1, 2, 3, 4] and references therein. Recently, structured
-bandit problems in which the distributions of the rewards pertaining to each arm are connected
-by a common unknown parameter have received much attention [5, 6, 7, 8, 9]. This model is
-motivated by the many practical applications where the number of arms is large, but the payoffs are
-interrelated. Up to know, two different models were studied in the literature along these lines. In
-one model, in each times step, a side-information, or context, is given to the agent first. The payoffs
-of the arms depend both on this side information and the index of the arm. Thus the optimal arm
-changes with the context [5, 6, 9]. In the second, simpler model, that we are also interested in here,
-there is no side-information, but the agent is given a model that describes the possible relations
-\section{Problem setting}
+\section{Problem setting and existing results}
+The agent plays for a total of $T$ rounds and chooses an arm $X_t$ at each round. 
+We assume that the arms come from a closed subset $S$ of the $d$-dimensional euclidean space $x_i \in S\subset\mathbb{R}^d$, are bounded in length by L and that the features are known to the agent.
+There exists a bounded unknown parameter $\theta_*\in \mathbb{R}$, $||\theta_*||_2 \leq R$.
+When the agent plays an arm $x_i$ at time $t$, he will observe the reward $R_t = \mu(x_i^T\theta_*) +\eta_t$. $\mu$ is hereby a non-decreasing link function that is $k_\mu$-Lipschitz and $\eta_t$ is a random noise that is $\lambda$-subgaussian. The optimal arm is denoted $x_*$: $\max_x\mu(x^T\theta_*) = \mu(x_*^T\theta_*)$. For a given strategy, we denote with $x_t$ the arm that is chosen at time $t$.\\
+The immediate regret at time $t$ is defined as 
+$$\Reg_t := \mathbb{E}\left[R_t|X_t=x_*\right]-\mathbb{E}\left[R_t|X_t=x_t\right]$$,
+and the total regret or simply regret is the cumulative sum of immediate regrets
+$$\Reg(T) := \sum_{i=1}^T \Reg_i.$$
+We define two different estimators in this section.
+The second is used in the work of \ref{}, the other, we believe, is more favorable in this setting.
+Given observations $(R_1,X_1), (R_2,X_2),\ldots,(R_{t-1},X_{t-1})$, the least square estimator (LSE) $\hat{\theta}$ is defined as the minimizer of
+$$\sum_{k=1}^{t-1}\left(R_k - \mu(X_k^T\theta_*)\right)^2.$$
+Consistency of the LSE in our setting is a standard result \ref{}.
 
-\section{Lower bounds}
+The pseudo maximum likelihood estimator (pseudo-MLE), is defined as the solution $\hat{\theta}_P$ of the equation
+$$\sum_{k=1}^{t-1}(R_k-\mu(X_k^T\hat{\theta}_P))X_k = 0.$$
+The estimator is consistent under very general assumptions, however it requires again that $\dot{\mu}$ is bounded away from zero, which is why this estimator is unfavourable in our setting.
+For self consistency, we briefly explain the rationale behind this estimator.
+If the rewards are actually drawn from a \textit{canonical exponential family}, that means the density for a reference measure is
+$$p_\beta(r) = \exp(r\beta − b(\beta) + c(r)) ,$$
+then the pseudo-MLE is simply the regular maximum likelihood estimator. $\beta$ is a real number, $c$ is a real-valued function and $b$ is twice continuously differentiable. The mean is given by $\mathbb{R}[R] = \dot{b}(\beta)$ ( $=\mu(\beta)$ ) and the tails are indeed subgaussian. 
 
-We now present the main result of the paper. The general lower bound proofs the claim that the constants are not mere artifacts of the analysis, while the algorithm dependent bound proofs that there is an unsuperable gap when using the pseudo MLE for subgaussian noise.
+An algorithm based on the \textit{optimism in the face of uncertainty} principles is proven to satisfy a bound on the regret of the shape $\tilde{\mathcal{O}}(\frac{k\mu}{c_\mu}\sqrt{T})$. 
+The motivating function for this setting is traditionally the sigmoid function $f(x) = (1+\exp(-x))^{-1}$.
+W.l.o.g. we can reformulate the problem such that $||x||,||\theta_*||\leq 1$ and $\mu:[-1,1]\rightarrow\mathbb{R}$,
+$\mu(x) = (1+\exp(-LR_{\max}x))^{-1}$.
+In this case $k_\mu = \frac{LR}{4}$, $c_\mu^{-1} = \left(\frac{LR}{(e^{0.5LR}+e^{-0.5LR})^2}\right)^{-1} > \frac{\exp(LR)}{LR}$. The constant in front of $T$ grows exponentially with the possible length of $\theta_*$ and the arms, rendering this bound meaningless for most applications.
+
+
+\section{Lower bounds} \label{lowerBounds}
+
+We now present the main result of the paper. The general lower bound proves the claim that the constants are not mere artifacts of the analysis, while the algorithm dependent bound proofs that there is an insuperable gap when using the pseudo MLE for subgaussian noise.
 
 \subsection{Algorithm independent bound}
 
@@ -272,3 +296,4 @@ G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
   Computation} {\bf 1}(3):321-323.
 
 \end{document}
+
