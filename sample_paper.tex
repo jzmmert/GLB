@@ -14,8 +14,18 @@
 \usepackage{color}
 \usepackage{amsthm}
 
+  \DeclareMathOperator\caret{\raisebox{1ex}{$\scriptstyle\wedge$}}
 \newcommand{\Reg} {
   \operatorname{Reg}}
+  
+\newcommand{\EV}[1] {
+  \mathbb{E}\left[#1\right]}
+\newcommand{\sign} {
+  \operatorname{sign}}
+  \newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
 \begin{document}
 
 % If your paper is accepted and the title of your paper is very long,
@@ -102,25 +112,93 @@ In this case $k_\mu = \frac{LR}{4}$, $c_\mu^{-1} = \left(\frac{LR}{(e^{0.5LR}+e^
 
 \section{Lower bounds} \label{lowerBounds}
 
-We now present the main result of the paper. The general lower bound proves the claim that the constants are not mere artifacts of the analysis, while the algorithm dependent bound proofs that there is an insuperable gap when using the pseudo MLE for subgaussian noise.
+We now present the main results of the paper. First a algorithm independent lower bounds for non-decreasing link functions proves that the constants are not mere artifacts of the analysis. Second an algorithm dependent bound proofs that there is an insuperable gap when using the pseudo MLE for subgaussian noise.
 
 \subsection{Algorithm independent bound}
-
+\begin{theorem}
+For any finite time horizon $T>4^5$ there exists a generalized linear bandit problem with finitely many arms, a 1-Lipschitz link function $\mu$, such that the regret of any algorithm will be at least of the order $\Omega(T^{\frac{1}{2}+\frac{1}{10}})$.
+\end{theorem}
+\begin{corollary}
+It is impossible to derive a $c_\mu$ independent upper bound for the generalized linear bandit of the order $\tilde{\mathcal{O}}(\sqrt{T})$.
+\end{corollary}
+\begin{proof}
+    Define the GLB Problem $P(T)$ as follows:\\
+    We chose the link function 
+    \begin{align}
+        \mu(x) := \max\{0, x+\epsilon-1\}
+    \end{align}
+    with $\epsilon = \frac{1}{2}T\wedge(-\frac{2}{d+3})$.
+    Results on packing unit spheres (details in the Appendix) show that we can find a set $\mathcal{X} \subset \mathcal{B}_1$ of vectors in the $d$-unit ball of cardinality at least $|\mathcal{X}|\geq T\wedge{\frac{d-1}{d+3}}=:K$. Any two distinct arms $x_i,x_j\in\mathcal{X}$ are far enough away from each other to ensure $x_i^Tx_j \leq 1-\epsilon$.
+    Assume $\theta_*\in \mathcal{X}$ as well, then this problem is equivalent to a $K$-armed bandit problem where one good arm gives in average $\epsilon$ reward, while all others are 0.
+    
+     Given $\epsilon\leq\sqrt{\frac{k}{T}}$, the lower bound for k-armed bandits shows in this case that any algorithm will at least observe a regret of the order 
+     $$\Omega(\epsilon T) = \Omega(T\wedge(\frac{1}{2}+\frac{d-1}{2d+6})$$.
+\end{proof}
 The exponent $\frac{}{}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
 In real world application, we typically deal with relatively large dimensions. 
 Unless we are very careful about the chosen link function, it might be impossible to learn anything meaningfull in a given time.
-That is why we distinguish in \ref{upperBounds} between different families of link functions, to provide safe-to-use applications.
+That is why we distinguish in section \ref{upperBounds} between different families of link functions, to provide safe-to-use applications.
 
 \subsection{Pseudo Maximum-Likelihood based lower bound}
-For simplicity, we assume a simple Explore then Commit algorithm. 
+For simplicity, we assume a simple Explore then Commit algorithm in two dimensions. 
 We show that for any time horizon $T$, we can construct a problem where with constant probability the pseudo MLE choses an arm not better than random.
 During the exploration, we suffer an regret even larger than what the general lower bound predicts.
+\begin{theorem}
+For any finite time horizon $T$, there exists a generalized linear bandit problem such that after $T$ uniform exploration steps, the regret for playing the optimal arm for $\hat{\theta}$ will be $T^{-\frac{1}{4}}$ with a $T$ independent constant probability.
+\end{theorem}
+\begin{corollary}
+The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
+\end{corollary}
+\begin{proof}
+    Define the GLB Problem as follows:\\
+    \begin{itemize}
+    \item $\mu(x) := \max\{0, x+\epsilon-1\}$
+    \item $\mathcal{X} = \mathcal{S}^1$, the $2$-d unit circle
+    \item $\eta_i\sim \mathcal{N}(0,1)$
+    \item $\theta_* = \binom{1}{0}
+    $
+    \end{itemize}
+    After $T$ steps of uniform exploration, the psuedo-MLE is the solution to
+    $$\sum_{k=1}^T\left(\mu(x_k^T\theta_*)-\mu(x_k^T\hat{\theta}_P)+\eta_k\right)x_k=0.$$
+    $$\sum_{k=1}^T\mu(x_k^T\hat{\theta}_P)x_k = \sum_{k=1}^T\mu(x_k^T\theta_*)x_k + \boldsymbol{\eta},$$
+    with $\boldsymbol{\eta}\sim \mathcal{N}\left(0,\begin{pmatrix}
+    \sum_{k=1}^T(x_k^{(1)})^2&0\\
+    0&\sum_{k=1}^T(x_k^{(2)})^2
+    \end{pmatrix}\right)$.
+    We argue that this estimator can in average not be better, than if we would perform a continuous exploration.
+    By choosing an arbitrary uniform distribution of points on the circle, we are adding additional noise over continuous exploration. We are looking at the estimator given by
+    $$\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\hat{\theta}_C)x\,dx = \frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx + \boldsymbol{\eta},$$
+    with $\boldsymbol{\eta}\sim \mathcal{N}(0,T\mathbf{I})$.
+    The left hand side is co-linear to $\hat{\theta}_C$ due to symmetry, the integral on the right hand side can be explicitly solved.
+    \begin{align*}
+    &\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx = \frac{T}{2\pi}\int_{0}^{2\pi}\mu(\cos(x))\cos(x)\theta_*\,dx \\
+    =&\frac{T}{\pi}\theta_*\int_{0}^{\pi}\mu(\cos(x))\cos(x)\,dx=\frac{T}{\pi}\theta_*\int_{0}^{1}\frac{\mu(x)x}{\sqrt{1-x^2}}\,dx\\
+    =&\frac{T}{\pi}\theta_*\int_{1-\epsilon}^{1}\frac{x-x^2}{\sqrt{1-x^2}}\,dx\\
+    =&\frac{T}{2\pi}\left(\sin^{-1}(1-\epsilon)-\frac{\pi}{2}+(1+\epsilon)\sqrt{2\epsilon-\epsilon^2}\right)\theta_*=c_\epsilon T\theta_*
+    \end{align*}
+    The arm chosen after the Exploration phase is therefore:
+    $$\hat{x} = \frac{\hat{\theta}_C}{||\hat{\theta}_C||}=\frac{(c_\epsilon T+\eta_1)\binom{1}{0}+\eta_2\binom{0}{1}}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}.$$
+    We are interested for a bound on the immediate regret for choosing $\hat{x}$. Given that $\eta_1,\eta_2\sim \mathcal{0,T}$ i.i.d, with probability at least $\frac{1}{4}$, we have $\eta_1\leq0$ and $\eta_2 \geq T$.
+    $$
+    \hat{x}^T\theta_* = \frac{c_\epsilon T+\eta_1}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}\leq \frac{c_\epsilon T}{\sqrt{c^2_\epsilon T^2 + T}}
+    $$
+    Series expansion of $c_\epsilon$, shows that $c_\epsilon\leq\epsilon^{\frac{3}{2}}$.
+    $$
+    \hat{x}^T\theta_*\leq \frac{\epsilon^{\frac{3}{2}}T}{\sqrt{\epsilon^3T^2+T}}\leq \frac{1}{\sqrt{2}}
+    $$
+    For $T\geq $, it holdts that $\frac{1}{\sqrt{2}}<1-\epsilon$. With probability at least $\frac{1}{4}$, the estimator will  choose an arm that suffers $\epsilon$ immediate regret. Therefore even if Exploit-then-Commit would spend less than the full for exploration, the total regret will still be of order $\Omega(\epsilon T)=\Omega (T^{\frac{2}{3}})$. There exists a gap to the general lower bound of order $\Omega (T^{\frac{2}{3}})$. We will show in the next section, that employing LSE performs better.
+    
+    
+    
+    
+\end{proof}
 
+The pseudo-MLE based approach will suffer a regret that is higher than the general lower bound. In the following section, we show that the LSE does not show this behaviour, proving a true gap between the two estimators.
 \section{Upper bounds}\label{upperBounds}
 The lower bound given in the previous section is of a relatively odd nature. 
 To our best knowledge, the hasn't been a similar exponent derived for any bandit related lower bound.
 This naturally raises the question, whether this is even a tight lower bound.
-While for practical purposes, this is of little relevance because it is already prohibitive with the existing bound, it is still of academic interest.
+While for practical purposes, this is of little relevance. Even matching algorithms would be prohibitive with an almost linear regret. The question is however of academic interest.
 Secondly, it is essential for provide well behaving function that are guaranteed to suffer $\sqrt{T}$ regret instead.
 
 We are not yet able to provide a complete answer to these question. 
@@ -139,7 +217,160 @@ In this section, we assume that
 \item The derivative $\dot{\mu}$ is axis symmetric and monotonous
 \end{itemize}
 \subsection{concave-convex link functions}
-We will first 
+\section{$\mu$ independent upper bound for Explore then Commit with least square estimator}
+\subsection{Problem assumptions}
+The following assumptions are currently made, 
+\begin{itemize}
+\item the arms consist of the surface of the unit ball $\mathcal{B}_1$ (scaling can be absorbed in $\kappa$).
+\item we are playing the arms for a total of $T$ time-steps and this value is known beforehand.
+\item the norm of $||\theta_*||$ is fixed to 1. (scaling can be absorbed in $\kappa$). We can further use this value in our exploration budget. \color{red}should be generalized to $||\theta_*||\leq 1$ later.\color{black}
+\item $0\leq\dot{\mu}\leq \kappa$ \color{red}RHS will be eventually replaced by $\mu(x)\geq \mu(||\theta_*||)-\kappa(1-x)||\theta_*||$\color{black}
+\item $\dot{\mu}(x)=\dot{\mu}(-x)$ \color{red}shouldn't be required, but also doesn't hurt much and makes the analysis much easier\color{black}
+\item the noise is $\sigma$-subgaussian 
+\end{itemize}
+
+We are further defining the following functions
+\begin{align}
+    L(\theta) &= \EV{(\mu(x^T\theta)-R)^2}\nonumber\\
+    &= \EV{(\mu(x^T\theta)-\mu(x^T\theta_*)-\eta)^2}=\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}+\sigma^2\\
+    L_n(\theta) &= \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\theta)-R_k)^2= \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\theta)-\mu(x_k^T\theta_*)-\eta_k)^2
+\end{align}
+Obviously $\theta_*$ is the minimum of $L$.\\
+The least square estimator is
+\begin{align}
+    \hat{\theta} := \arg\,\min_{\theta} L_n(\theta)
+\end{align}
+\textbf{Our algorithm is Explore-then-Commit:}\\
+Explore the arms uniformly until a stopping time $\mathcal{T}$ \color{red}currently this is a fixed value because we know the length of $||\theta_*||$ \color{black}. After this commit to playing $\hat{\theta}$ for the remaining time-steps.
+\subsection{Results}
+\color{red}This is what we aim for, the proof still has gaps though\color{black}
+\begin{theorem}
+    For any time $T$ and any $\mu$ under the given constraints, with probability at least $1-\delta$, the regret of the given algorithm will be bounded by
+    \begin{align}
+        \operatorname{Reg}(T) \leq c T\caret\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
+    \end{align}
+\end{theorem}
+The proof will require the following lemmas:
+\begin{lemma}
+    With probability at least $1-\delta$, is holds that 
+    \begin{align}
+    L(\hat{\theta})-L(\theta_*)\leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})+\color{red}?\color{black}
+    \end{align}
+\end{lemma}
+\begin{proof}
+    As $\hat{\theta}$ is the minimizer of $L_n$, it holds that
+    \begin{align*}
+        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 + L_n(\theta_*)-L_n(\hat{\theta})\\
+        = \frac{2}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))\eta_k\\
+        = \frac{2}{\sqrt{n}}\sqrt{\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2}\sum_{k=1}^n\frac{(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))}{\sqrt{\sum_{l=1}^n(\mu(x_l^T\hat{\theta})-\mu(x_l^T\theta_*))^2}}\eta_k\\
+        w.h.p. \leq   \frac{2}{\sqrt{n}}\sqrt{ \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 }\sigma(c_1\sqrt{\log(2n)}+c_2\sqrt{\log{\delta^{-1}}})\\
+        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
+    \end{align*}
+    \color{red}TODO: bound $\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}-\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2$ for bound on $L(\hat{\theta})-L(\theta_*)$. Write down the constants $c_1, c_2$ explicitly.\color{black}\\
+\end{proof}
+\begin{lemma}
+    Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then 
+    $L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*))$
+\end{lemma}
+\begin{proof}
+Let $\theta_1$ and $\theta_2$ be the two orthogonal vectors such that $\theta_* = \theta_1-\theta_2$ and $\tilde{\theta}=\theta_1+\theta_2$.\\
+Define the two sets
+\begin{align*}
+\mathcal{B}_1 &= \left\{x|\sign(x^T\theta_1)=\sign(x^T\theta_2)\right\}\\ 
+\mathcal{B}_2 &= \left\{x|\sign(x^T\theta_1)=-\sign(x^T\theta_2)\right\}.
+\end{align*}
+Due to Symmetry it holds that 
+$$\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}=\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_2}$$
+If $||\hat{\theta}||_2 > ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_1$.\\
+If $||\hat{\theta}||_2 < ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_2$.\\
+Finally we get
+\begin{align*}
+     &L(\hat{\theta})-L(\theta_*) = \EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}\\
+     =& \frac{1}{2}\left(\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}+\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}|x\in\mathcal{B}_2\right)\\
+     \geq& \frac{1}{2}\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2}=\frac{1}{2}(L(\tilde{\theta})-L(\theta_*))
+\end{align*}
+\end{proof}
+\subsubsection{$d=2$}
+\color{red}This is the most important gap. It holds for $\mu = (x-1+\epsilon)_+$, but I haven't succeeded in a general proof.\color{black}
+\begin{proposition}
+Given any valid $\mu$ with the additional constrain $\int_0^{||\theta_*||}\dot{\mu}(x)\,dx=\epsilon$, then for $d=2$ it holds 
+\begin{align*}
+    L(\tilde{\theta})-L(\theta_*) \geq \kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\epsilon^{-\frac{3}{2}}
+\end{align*}
+\end{proposition}
+\begin{proof}
+
+\begin{align*}
+    L(\tilde{\theta})-L(\theta_*)
+    =&\EV{(\mu(x^T\theta_1-x^T\theta_2)-\mu(x^T\theta_1+x^T\theta_2))^2}\\
+    =&\int_{0}^{2\pi}\left(\mu(\cos(x)|\theta_1|-\sin(x)|\theta_2|)-\mu(\cos(x)|\theta_1|+\sin(x)|\theta_2|)\right)^2\, dx\\
+    =&2\int_{0}^{\pi}\left(\int_{-\sin(x)|\theta_2|}^{\sin(x)|\theta_2|}\dot{\mu}(\cos(x)|\theta_1|+y)\,dy\right)^2\, dx\\
+    =&2|\theta_2|^2\int_{0}^{\pi}\left(\int_{-1}^{1}\dot{\mu}(\cos(x)|\theta_1|+\sin(x)|\theta_2|y)\,dy\right)^2\sin(x)^2\, dx\\
+    =&2|\theta_2|^2\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x|\theta_1|+\sqrt{1-x^2}|\theta_2|y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
+    \geq &2|\theta_2|^2 \inf_{\beta}\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x\sin(\beta)||\theta_*||+\sqrt{1-x^2}\cos(\beta)||\theta_*||y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
+    =&:2|\theta_2|^2J(\mu,||\theta_*||)\\
+    =&(x_*^T\theta_*-\hat{x}^T\theta_*) J(\mu,||\theta_*||)\\
+    \geq&\kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) J(\mu,||\theta_*||)\\
+\end{align*}
+\color{red}TODO: bound $J$\color{black}
+\end{proof}
+With these lemmas and the proposition, we can proof the theorem for $d=2$.\\
+\begin{proof}
+    \begin{align*}
+        \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}) \geq \kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\epsilon^{-\frac{3}{2}}\\
+        (\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) \leq \kappa\epsilon^{\frac{3}{2}}\frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
+    \end{align*}
+    Setting $n= T\caret{\frac{3}{5}}\epsilon^{-1}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))\caret\frac{2}{5}$, and by using $(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) \leq \epsilon$, we get
+    \begin{align*}
+        (\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) &\leq \min\left\{\epsilon, \epsilon^{\frac{5}{2}}T^{-\frac{3}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{3}{5}}\right\}\\
+        &\leq T^{-\frac{2}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{2}{5}}
+    \end{align*}
+    The total regret is the sum of exploration and exploration phase, therefore
+    \begin{align*}
+        \operatorname{Reg}(T) &\leq n\cdot\epsilon + T\cdot(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\\
+        &\leq 2 T^{\frac{3}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{2}{5}}
+    \end{align*}
+\end{proof}
+\subsection{$d\geq 3$}
+We express the Expectation in terms of integrals
+\begin{align*}
+   & L(\tilde{\theta})-L(\theta_*)\\
+    =&\EV{(\mu(x^T\theta_1-x^T\theta_2)-\mu(x^T\theta_1+x^T\theta_2))^2}\\
+    =&\frac{1}{|S_d|}\int_{S_d}(\mu(x^T\theta_1-x^T\theta_2)-\mu(x^T\theta_1+x^T\theta_2))^2 \,d\mathcal{L}_{d-1}(x)\\
+    =& \frac{2|S_{d-2}|}{|S_d|}\int_{0}^{\frac{\pi}{2}}\cos(\alpha)^{d-2}\\
+    &\,\int_{0}^{2\pi}(\mu(\sin(\alpha)(\cos(x)|\theta_1|-\sin(x)|\theta_2|))-\mu(\sin(\alpha)(\cos(x)|\theta_1|+\sin(x)|\theta_2|)))^2 \,dx\,d\alpha\\
+    \geq& \frac{4|S_{d-2}|}{|S_d|}\int_{0}^{\frac{\pi}{2}}\cos(\alpha)^{d-2}
+    J(\mu,\sin(\alpha)||\theta_*||)\,d\alpha\\
+    =& \frac{4|S_{d-2}||\theta_2|^2}{|S_d|}\int_{0}^{1}\frac{\alpha^{d-2}}{\sqrt{1-\alpha^2}}
+    J(\mu,\sqrt{1-\alpha^2})||\theta_*||)\,d\alpha\\
+\end{align*}
+
+\section{Notes}
+\begin{align*}
+     \inf_{\beta}&\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
+     &\frac{\partial}{\partial\beta}
+     \int_{-1}^{1}
+        \left(
+            \int_{-1}^{1}
+                \dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)
+            \,dy
+        \right)^2
+        \sqrt{1-x^2}\, dx\\
+     =2&\int_{-1}^{1}
+        \left(
+            \int_{-1}^{1}
+                \frac{\partial}{\partial\beta}
+                    \left[
+                        \dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)
+                    \right]
+            \,dy
+        \right)
+        \left(
+            \int_{-1}^{1}
+                \dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)
+            \,dy
+        \right)\sqrt{1-x^2}\, dx\\
+\end{align*} 
 \subsection{convex-concave link functions}
 
 \subsubsection{Citations in Text}
