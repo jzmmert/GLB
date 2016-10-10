@@ -127,12 +127,12 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
     \begin{align}
         \mu(x) := \max\{0, x+\epsilon-1\}
     \end{align}
-    with $\epsilon = \frac{1}{2}T\wedge(-\frac{2}{d+3})$.
-    Results on packing unit spheres (details in the Appendix) show that we can find a set $\mathcal{X} \subset \mathcal{B}_1$ of vectors in the $d$-unit ball of cardinality at least $|\mathcal{X}|\geq T\wedge{\frac{d-1}{d+3}}=:K$. Any two distinct arms $x_i,x_j\in\mathcal{X}$ are far enough away from each other to ensure $x_i^Tx_j \leq 1-\epsilon$.
+    with $\epsilon = \frac{1}{2}T\caret(-\frac{2}{d+3})$.
+    Results on packing unit spheres (details in the Appendix) show that we can find a set $\mathcal{X} \subset \mathcal{B}_1$ of vectors in the $d$-unit ball of cardinality at least $|\mathcal{X}|\geq T\caret{\frac{d-1}{d+3}}=:K$. Any two distinct arms $x_i,x_j\in\mathcal{X}$ are far enough away from each other to ensure $x_i^Tx_j \leq 1-\epsilon$.
     Assume $\theta_*\in \mathcal{X}$ as well, then this problem is equivalent to a $K$-armed bandit problem where one good arm gives in average $\epsilon$ reward, while all others are 0.
     
      Given $\epsilon\leq\sqrt{\frac{k}{T}}$, the lower bound for k-armed bandits shows in this case that any algorithm will at least observe a regret of the order 
-     $$\Omega(\epsilon T) = \Omega(T\wedge(\frac{1}{2}+\frac{d-1}{2d+6})$$.
+     $$\Omega(\epsilon T) = \Omega\left(T\caret\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)\right)$$.
 \end{proof}
 The exponent $\frac{}{}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
 In real world application, we typically deal with relatively large dimensions. 
@@ -216,225 +216,101 @@ In this section, we assume that
 \item $||\theta_*||$ is known.
 \item The derivative $\dot{\mu}$ is axis symmetric and monotonous
 \end{itemize}
-\subsection{concave-convex link functions}
-\section{$\mu$ independent upper bound for Explore then Commit with least square estimator}
-\subsection{Problem assumptions}
-The following assumptions are currently made, 
-\begin{itemize}
-\item the arms consist of the surface of the unit ball $\mathcal{B}_1$ (scaling can be absorbed in $\kappa$).
-\item we are playing the arms for a total of $T$ time-steps and this value is known beforehand.
-\item the norm of $||\theta_*||$ is fixed to 1. (scaling can be absorbed in $\kappa$). We can further use this value in our exploration budget. \color{red}should be generalized to $||\theta_*||\leq 1$ later.\color{black}
-\item $0\leq\dot{\mu}\leq \kappa$ \color{red}RHS will be eventually replaced by $\mu(x)\geq \mu(||\theta_*||)-\kappa(1-x)||\theta_*||$\color{black}
-\item $\dot{\mu}(x)=\dot{\mu}(-x)$ \color{red}shouldn't be required, but also doesn't hurt much and makes the analysis much easier\color{black}
-\item the noise is $\sigma$-subgaussian 
-\end{itemize}
+\paragraph{Results} 
+\begin{theorem}
+For any GLB problem with the above restrictions on $\mathcal{X}, \mu$ and $\theta$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than 
+$$
+\operatorname{Reg}(T) \leq c T^{\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
+$$
+\end{theorem}
+While this is not an upper bound for any link function, it is wide enough to proof that a true gap exists between pseudo-MLE and LSE in this setting. The second theorem answers the question about safe-to-use function and is relevant for practical applications
+\begin{theorem}
+If $\mu$ is additionally to the restrictions above, concave over $\mathbb{R}^+$, then for any GLB problem with the above restrictions on $\mathcal{X}$ and $\theta$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than 
+$$
+\operatorname{Reg}(T) \leq c \sqrt{T}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
+$$
+\end{theorem}
+\paragraph{Proofs} We will require the following definitions and Lemmata for both proofs.
 
-We are further defining the following functions
-\begin{align}
-    L(\theta) &= \EV{(\mu(x^T\theta)-R)^2}\nonumber\\
-    &= \EV{(\mu(x^T\theta)-\mu(x^T\theta_*)-\eta)^2}=\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}+\sigma^2\\
-    L_n(\theta) &= \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\theta)-R_k)^2= \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\theta)-\mu(x_k^T\theta_*)-\eta_k)^2
-\end{align}
+\begin{align*}
+    L(\theta) &:= \EV{(\mu(x^T\theta)-R)^2}\nonumber\\
+    &= \EV{(\mu(x^T\theta)-\mu(x^T\theta_*)-\eta)^2}\\
+    &=\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}+\sigma^2\\
+    L_n(\theta) &= \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\theta)-R_k)^2\\
+    &= \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\theta)-\mu(x_k^T\theta_*)-\eta_k)^2
+\end{align*}
 Obviously $\theta_*$ is the minimum of $L$.\\
 The least square estimator is
 \begin{align}
     \hat{\theta} := \arg\,\min_{\theta} L_n(\theta)
 \end{align}
-\textbf{Our algorithm is Explore-then-Commit:}\\
-Explore the arms uniformly until a stopping time $\mathcal{T}$ \color{red}currently this is a fixed value because we know the length of $||\theta_*||$ \color{black}. After this commit to playing $\hat{\theta}$ for the remaining time-steps.
-\subsection{Results}
-\color{red}This is what we aim for, the proof still has gaps though\color{black}
-\begin{theorem}
-    For any time $T$ and any $\mu$ under the given constraints, with probability at least $1-\delta$, the regret of the given algorithm will be bounded by
-    \begin{align}
-        \operatorname{Reg}(T) \leq c T\caret\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
-    \end{align}
-\end{theorem}
-The proof will require the following lemmas:
+The proofs for the main theorems will rely on an upper and lower bound of $L(\hat{\theta})-L(\theta_*)$ that provides with high probability an upper bound of the immediate regret of the LSE.
+
+The first lemma upper bounds the difference $L(\hat{\theta})-L(\theta_*)$ with high probability.
 \begin{lemma}
     With probability at least $1-\delta$, is holds that 
     \begin{align}
     L(\hat{\theta})-L(\theta_*)\leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})+\color{red}?\color{black}
     \end{align}
 \end{lemma}
-\begin{proof}
-    As $\hat{\theta}$ is the minimizer of $L_n$, it holds that
-    \begin{align*}
-        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 + L_n(\theta_*)-L_n(\hat{\theta})\\
-        = \frac{2}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))\eta_k\\
-        = \frac{2}{\sqrt{n}}\sqrt{\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2}\sum_{k=1}^n\frac{(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))}{\sqrt{\sum_{l=1}^n(\mu(x_l^T\hat{\theta})-\mu(x_l^T\theta_*))^2}}\eta_k\\
-        w.h.p. \leq   \frac{2}{\sqrt{n}}\sqrt{ \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 }\sigma(c_1\sqrt{\log(2n)}+c_2\sqrt{\log{\delta^{-1}}})\\
-        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
-    \end{align*}
-    \color{red}TODO: bound $\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}-\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2$ for bound on $L(\hat{\theta})-L(\theta_*)$. Write down the constants $c_1, c_2$ explicitly.\color{black}\\
-\end{proof}
+The second lemma ensures that we do not need to worry about the length of $\hat{\theta}$ in our lower bound of $L(\hat{\theta})-L(\theta_*)$.
 \begin{lemma}
-    Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then 
-    $L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*))$
+    Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then
+    $$L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*)).$$
 \end{lemma}
+
+We will require two theorems to lower bound this term for the general setting and for the concave setting.
+\begin{theorem}
+$$L(\tilde{\theta})-L(\theta_*) \geq (\mu(1)-\mu(\tilde{\theta}^T\theta_*))(\mu(1)-\mu(0))^{\frac{d+1}{2}}$$
+\end{theorem}
 \begin{proof}
-Let $\theta_1$ and $\theta_2$ be the two orthogonal vectors such that $\theta_* = \theta_1-\theta_2$ and $\tilde{\theta}=\theta_1+\theta_2$.\\
-Define the two sets
+We can write the difference in terms of integrals
+
 \begin{align*}
-\mathcal{B}_1 &= \left\{x|\sign(x^T\theta_1)=\sign(x^T\theta_2)\right\}\\ 
-\mathcal{B}_2 &= \left\{x|\sign(x^T\theta_1)=-\sign(x^T\theta_2)\right\}.
+    &L(\tilde{\theta})-L(\theta_*)=\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2}\\
+    =&\frac{1}{|\mathcal{S}^{d-1}|}\int_{\mathcal{S}^{d-1}}\left(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*)\right)^2\, dx
 \end{align*}
-Due to Symmetry it holds that 
-$$\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}=\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_2}$$
-If $||\hat{\theta}||_2 > ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_1$.\\
-If $||\hat{\theta}||_2 < ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_2$.\\
-Finally we get
+For the value inside the integral, it only matters where $x$ intersects the span of $\tilde{\theta}$ and $\theta_*$. Assume $(x^T\tilde{\theta})^2+(x^T\theta_*)^2 = \sin(\alpha)^2$, then there is a $d-2$ dimensional sphere of volume $\mathcal{S}^{d-3}\cos(\alpha)^{d-3}$ satisfying the equation. We can write the integral in the following way, considering by abuse of notation $\tilde{\theta},\theta_*$ as the $2$-dimensional projections of the $\theta$'s into their common plane.
 \begin{align*}
-     &L(\hat{\theta})-L(\theta_*) = \EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}\\
-     =& \frac{1}{2}\left(\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}+\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}|x\in\mathcal{B}_2\right)\\
-     \geq& \frac{1}{2}\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2}=\frac{1}{2}(L(\tilde{\theta})-L(\theta_*))
-\end{align*}
+    =2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{\frac{\pi}{2}}&\cos(\alpha)^{d-3}\\
+    &\int_{\mathcal{S}^1_{\sin(\alpha)}}\left(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*)\right)^2\, dx\,d\alpha\nonumber\\
+    =2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{\frac{\pi}{2}}&\cos(\alpha)^{d-3}\sin(\alpha)\nonumber\\
+    &\int_{\mathcal{S}^1}\left(\mu(\sin(\alpha)x^T\tilde{\theta})-\mu(\sin(\alpha)x^T\theta_*)\right)^2\, dx\,d\alpha\nonumber
+\end{align*}    
+    Assume the angle between $\tilde{\theta}$ and $\theta_*$ is $\beta$, then with substitution we get
+    \begin{align}
+        &=2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{\frac{\pi}{2}}\,d\alpha\left[\cos(\alpha)^{d-3}\sin(\alpha)\int_{0}^{2\pi}\, dx\right.\nonumber\\
+    &\left.\left(\mu(\sin(\alpha)\cos(x-\frac{\beta}{2}))-\mu(\sin(\alpha)\cos(x+\frac{\beta}{2}))\right)^2\right]\nonumber\\
+        &=2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\int_{0}^{2\pi}\, dx\right.\nonumber\\
+    &\left.\left(\mu(\alpha\cos(x-\frac{\beta}{2}))-\mu(\alpha \cos(x+\frac{\beta}{2}))\right)^2\right]\label{dbound}
+    \end{align}
+    \begin{lemma}
+        For any valid $\mu$, it holds
+        \begin{align*}
+            \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
+            \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{3}{2}
+        \end{align*}
+    \end{lemma}
 \end{proof}
-\subsubsection{$d=2$}
-\color{red}This is the most important gap. It holds for $\mu = (x-1+\epsilon)_+$, but I haven't succeeded in a general proof.\color{black}
-\begin{proposition}
-Given any valid $\mu$ with the additional constrain $\int_0^{||\theta_*||}\dot{\mu}(x)\,dx=\epsilon$, then for $d=2$ it holds 
-\begin{align*}
-    L(\tilde{\theta})-L(\theta_*) \geq \kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\epsilon^{-\frac{3}{2}}
-\end{align*}
-\end{proposition}
+\begin{theorem}
+$$L(\tilde{\theta})-L(\theta_*) \geq (\mu(1)-\mu(\tilde{\theta}^T\theta_*) )(\mu(1)-\mu(0))^{\frac{1}{2}}$$
+\end{theorem}
 \begin{proof}
-
+The proof follows the argument of Theorem 8 unit \ref{dbound}. Lemma 8 can be bounded tighter for concave $\mu$
+\begin{lemma}
+    For ... concave $\mu$ ...
 \begin{align*}
-    L(\tilde{\theta})-L(\theta_*)
-    =&\EV{(\mu(x^T\theta_1-x^T\theta_2)-\mu(x^T\theta_1+x^T\theta_2))^2}\\
-    =&\int_{0}^{2\pi}\left(\mu(\cos(x)|\theta_1|-\sin(x)|\theta_2|)-\mu(\cos(x)|\theta_1|+\sin(x)|\theta_2|)\right)^2\, dx\\
-    =&2\int_{0}^{\pi}\left(\int_{-\sin(x)|\theta_2|}^{\sin(x)|\theta_2|}\dot{\mu}(\cos(x)|\theta_1|+y)\,dy\right)^2\, dx\\
-    =&2|\theta_2|^2\int_{0}^{\pi}\left(\int_{-1}^{1}\dot{\mu}(\cos(x)|\theta_1|+\sin(x)|\theta_2|y)\,dy\right)^2\sin(x)^2\, dx\\
-    =&2|\theta_2|^2\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x|\theta_1|+\sqrt{1-x^2}|\theta_2|y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
-    \geq &2|\theta_2|^2 \inf_{\beta}\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x\sin(\beta)||\theta_*||+\sqrt{1-x^2}\cos(\beta)||\theta_*||y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
-    =&:2|\theta_2|^2J(\mu,||\theta_*||)\\
-    =&(x_*^T\theta_*-\hat{x}^T\theta_*) J(\mu,||\theta_*||)\\
-    \geq&\kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) J(\mu,||\theta_*||)\\
+            \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
+            \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{1}{2}
 \end{align*}
-\color{red}TODO: bound $J$\color{black}
+\end{lemma}
 \end{proof}
-With these lemmas and the proposition, we can proof the theorem for $d=2$.\\
-\begin{proof}
-    \begin{align*}
-        \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}) \geq \kappa^{-1}(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\epsilon^{-\frac{3}{2}}\\
-        (\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) \leq \kappa\epsilon^{\frac{3}{2}}\frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
-    \end{align*}
-    Setting $n= T\caret{\frac{3}{5}}\epsilon^{-1}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))\caret\frac{2}{5}$, and by using $(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) \leq \epsilon$, we get
-    \begin{align*}
-        (\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*)) &\leq \min\left\{\epsilon, \epsilon^{\frac{5}{2}}T^{-\frac{3}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{3}{5}}\right\}\\
-        &\leq T^{-\frac{2}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{2}{5}}
-    \end{align*}
-    The total regret is the sum of exploration and exploration phase, therefore
-    \begin{align*}
-        \operatorname{Reg}(T) &\leq n\cdot\epsilon + T\cdot(\mu(x_*^T\theta_*)-\mu(\hat{x}^T\theta_*))\\
-        &\leq 2 T^{\frac{3}{5}}(8\kappa\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}}))^{\frac{2}{5}}
-    \end{align*}
+\begin{proof}[Proof of theorem 3]
+ Combining Lemma 6, theorem 7 and Lemma 5, it holds
+ \begin{align*}
+     \frac{8}{n}() \geq \lambda \epsilon^{\frac{d+1}{2}}
+ \end{align*}
 \end{proof}
-\subsection{$d\geq 3$}
-We express the Expectation in terms of integrals
-\begin{align*}
-   & L(\tilde{\theta})-L(\theta_*)\\
-    =&\EV{(\mu(x^T\theta_1-x^T\theta_2)-\mu(x^T\theta_1+x^T\theta_2))^2}\\
-    =&\frac{1}{|S_d|}\int_{S_d}(\mu(x^T\theta_1-x^T\theta_2)-\mu(x^T\theta_1+x^T\theta_2))^2 \,d\mathcal{L}_{d-1}(x)\\
-    =& \frac{2|S_{d-2}|}{|S_d|}\int_{0}^{\frac{\pi}{2}}\cos(\alpha)^{d-2}\\
-    &\,\int_{0}^{2\pi}(\mu(\sin(\alpha)(\cos(x)|\theta_1|-\sin(x)|\theta_2|))-\mu(\sin(\alpha)(\cos(x)|\theta_1|+\sin(x)|\theta_2|)))^2 \,dx\,d\alpha\\
-    \geq& \frac{4|S_{d-2}|}{|S_d|}\int_{0}^{\frac{\pi}{2}}\cos(\alpha)^{d-2}
-    J(\mu,\sin(\alpha)||\theta_*||)\,d\alpha\\
-    =& \frac{4|S_{d-2}||\theta_2|^2}{|S_d|}\int_{0}^{1}\frac{\alpha^{d-2}}{\sqrt{1-\alpha^2}}
-    J(\mu,\sqrt{1-\alpha^2})||\theta_*||)\,d\alpha\\
-\end{align*}
-
-\section{Notes}
-\begin{align*}
-     \inf_{\beta}&\int_{-1}^{1}\left(\int_{-1}^{1}\dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)\,dy\right)^2\sqrt{1-x^2}\, dx\\
-     &\frac{\partial}{\partial\beta}
-     \int_{-1}^{1}
-        \left(
-            \int_{-1}^{1}
-                \dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)
-            \,dy
-        \right)^2
-        \sqrt{1-x^2}\, dx\\
-     =2&\int_{-1}^{1}
-        \left(
-            \int_{-1}^{1}
-                \frac{\partial}{\partial\beta}
-                    \left[
-                        \dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)
-                    \right]
-            \,dy
-        \right)
-        \left(
-            \int_{-1}^{1}
-                \dot{\mu}(x\sin(\beta)+\sqrt{1-x^2}\cos(\beta)y)
-            \,dy
-        \right)\sqrt{1-x^2}\, dx\\
-\end{align*} 
-\subsection{convex-concave link functions}
-
-\subsubsection{Citations in Text}
-
-Citations within the text should include the author's last name and
-year, e.g., (Cheesman, 1985). References should follow any style that
-you are used to using, as long as their style is consistent throughout
-the paper.  Be sure that the sentence reads correctly if the citation
-is deleted: e.g., instead of ``As described by (Cheesman, 1985), we
-first frobulate the widgets,'' write ``As described by Cheesman
-(1985), we first frobulate the widgets.''  Be sure to avoid
-accidentally disclosing author identities through citations.
-
-\subsubsection{Footnotes}
-
-Indicate footnotes with a number\footnote{Sample of the first
-  footnote.} in the text. Use 8 point type for footnotes. Place the
-footnotes at the bottom of the column in which their markers appear,
-continuing to the next column if required. Precede the footnote
-section of a column with a 0.5 point horizontal rule 1~inch (6~picas)
-long.\footnote{Sample of the second footnote.}
-
-\subsubsection{Figures}
-
-All artwork must be centered, neat, clean, and legible.  All lines
-should be very dark for purposes of reproduction, and art work should
-not be hand-drawn.  Figures may appear at the top of a column, at the
-top of a page spanning multiple columns, inline within a column, or
-with text wrapped around them, but the figure number and caption
-always appear immediately below the figure.  Leave 2 line spaces
-between the figure and the caption. The figure caption is initial caps
-and each figure should be numbered consecutively.
-
-Make sure that the figure caption does not get separated from the
-figure. Leave extra white space at the bottom of the page rather than
-splitting the figure and figure caption.
-\begin{figure}[h]
-\vspace{.3in}
-\centerline{\fbox{This figure intentionally left non-blank}}
-\vspace{.3in}
-\caption{Sample Figure Caption}
-\end{figure}
-
-\subsubsection{Tables}
-
-All tables must be centered, neat, clean, and legible. Do not use hand-drawn tables. Table number and title always appear above the table.
-See Table~\ref{sample-table}.
-
-Use one line space before the table title, one line space after the table title, and one line space after the table. The table title must be
-initial caps and each table numbered consecutively.
-
-\begin{table}[h]
-\caption{Sample Table Title} \label{sample-table}
-\begin{center}
-\begin{tabular}{ll}
-{\bf PART}  &{\bf DESCRIPTION} \\
-\hline \\
-Dendrite         &Input terminal \\
-Axon             &Output terminal \\
-Soma             &Cell body (contains cell nucleus) \\
-\end{tabular}
-\end{center}
-\end{table}
-
 \section{SUPPLEMENTARY MATERIAL}
 
 If you need to include additional appendices during submission, you
@@ -443,62 +319,7 @@ can include them in the supplementary material file.
 
 \newpage
 
-\section{INSTRUCTIONS FOR CAMERA-READY PAPERS}
 
-For the camera-ready paper, if you are using \LaTeX, please make sure
-that you follow these instructions.  (If you are not using \LaTeX,
-please make sure to achieve the same effect using your chosen
-typesetting package.)
-
-\begin{enumerate}
-    \item Download \texttt{fancyhdr.sty} -- the
-    \texttt{aistats2017.sty} file will make use of it.
-    \item Begin your document with
-    \begin{flushleft}
-    \texttt{\textbackslash documentclass[twoside]\{article\}}\\
-    \texttt{\textbackslash usepackage[accepted]\{aistats2017\}}
-    \end{flushleft}
-    The \texttt{twoside} option for the class article allows the
-    package \texttt{fancyhdr.sty} to include headings for even and odd
-    numbered pages. The option \texttt{accepted} for the package
-    \texttt{aistats2017.sty} will write a copyright notice at the end of
-    the first column of the first page. This option will also print
-    headings for the paper.  For the \emph{even} pages, the title of
-    the paper will be used as heading and for \emph{odd} pages the
-    author names will be used as heading.  If the title of the paper
-    is too long or the number of authors is too large, the style will
-    print a warning message as heading. If this happens additional
-    commands can be used to place as headings shorter versions of the
-    title and the author names. This is explained in the next point.
-    \item  If you get warning messages as described above, then
-    immediately after $\texttt{\textbackslash
-    begin\{document\}}$, write
-    \begin{flushleft}
-    \texttt{\textbackslash runningtitle\{Provide here an alternative shorter version of the title of your
-    paper\}}\\
-    \texttt{\textbackslash runningauthor\{Provide here the surnames of the authors of your paper, all separated by
-    commas\}}
-    \end{flushleft}
-    Note that the text that appears as argument in \texttt{\textbackslash
-      runningtitle} will be printed as a heading in the \emph{even}
-    pages. The text that appears as argument in \texttt{\textbackslash
-      runningauthor} will be printed as a heading in the \emph{odd}
-    pages.  If even the author surnames do not fit, it is acceptable
-    to give a subset of author names followed by ``et al.''
-
-    \item Use the file sample\_paper.tex as an example.
-
-    \item Both submitted and camera-ready versions of the paper are 8
-      pages, plus any additional pages needed for references.
-
-    \item If you need to include additional appendices,
-      you can include them in the supplementary
-      material file.
-
-    \item Please, don't change the layout given by the above
-      instructions and by the style file.
-
-\end{enumerate}
 
 \subsubsection*{Acknowledgements}
 
@@ -526,5 +347,39 @@ D.C.: Spartan Books.
 G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
   Computation} {\bf 1}(3):321-323.
 
+
+\section{Appendix}
+
+Proof lemma upper bound on L
+\begin{proof}
+    As $\hat{\theta}$ is the minimizer of $L_n$, it holds that
+    \begin{align*}
+        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 + L_n(\theta_*)-L_n(\hat{\theta})\\
+        = \frac{2}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))\eta_k\\
+        = \frac{2}{\sqrt{n}}\sqrt{\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2}\sum_{k=1}^n\frac{(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))}{\sqrt{\sum_{l=1}^n(\mu(x_l^T\hat{\theta})-\mu(x_l^T\theta_*))^2}}\eta_k\\
+        w.h.p. \leq   \frac{2}{\sqrt{n}}\sqrt{ \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 }\sigma(c_1\sqrt{\log(2n)}+c_2\sqrt{\log{\delta^{-1}}})\\
+        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
+    \end{align*}
+    \color{red}TODO: bound $\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}-\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2$ for bound on $L(\hat{\theta})-L(\theta_*)$. Write down the constants $c_1, c_2$ explicitly.\color{black}\\
+\end{proof}
+lemma lower bound 1
+\begin{proof}
+Let $\theta_1$ and $\theta_2$ be the two orthogonal vectors such that $\theta_* = \theta_1-\theta_2$ and $\tilde{\theta}=\theta_1+\theta_2$.\\
+Define the two sets
+\begin{align*}
+\mathcal{B}_1 &= \left\{x|\sign(x^T\theta_1)=\sign(x^T\theta_2)\right\}\\ 
+\mathcal{B}_2 &= \left\{x|\sign(x^T\theta_1)=-\sign(x^T\theta_2)\right\}.
+\end{align*}
+Due to Symmetry it holds that 
+$$\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}=\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_2}$$
+If $||\hat{\theta}||_2 > ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_1$.\\
+If $||\hat{\theta}||_2 < ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_2$.\\
+Finally we get
+\begin{align*}
+     &L(\hat{\theta})-L(\theta_*) = \EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}\\
+     =& \frac{1}{2}\left(\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}+\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}|x\in\mathcal{B}_2\right)\\
+     \geq& \frac{1}{2}\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2}=\frac{1}{2}(L(\tilde{\theta})-L(\theta_*))
+\end{align*}
+\end{proof}
 \end{document}
 
