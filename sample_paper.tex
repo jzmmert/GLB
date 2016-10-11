@@ -13,6 +13,7 @@
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage{amsthm}
+\usepackage{mathtools}
 
   \DeclareMathOperator\caret{\raisebox{1ex}{$\scriptstyle\wedge$}}
 \newcommand{\Reg} {
@@ -30,6 +31,8 @@
 \newcommand{\uc}{
 \color{red}C_?\color{black}
 }
+
+\newcommand{\whp}[1]{\stackrel{\mathclap{\normalfont\mbox{w.h.p.}}}{#1}}
 \begin{document}
 
 % If your paper is accepted and the title of your paper is very long,
@@ -127,8 +130,8 @@ We now present the main results of the paper. First a algorithm independent lowe
 
 \subsection{Algorithm independent bound}
 \begin{theorem}
-For any finite time horizon $T>\uc$ there exists a generalized linear bandit problem with finitely many arms $\mathcal{X}\subset\mathbb{R}^d$, $\mu\in M_k$, such that the regret of any algorithm will be at least
-$$\Reg(T) \geq \uc T\caret\left(\frac{d+1}{d+3}\right)$$.
+For any finite time horizon $T$ there exists a generalized linear bandit problem with finitely many arms $\mathcal{X}\subset\mathbb{R}^d$, $\mu\in M_k$, such that the regret of any algorithm will be at least of the order
+$$\Omega\left(T\caret\left(\frac{d+1}{d+3}\right)\right)$$.
 \end{theorem}
 \begin{corollary}
 It is impossible to derive a $c_\mu$ independent upper bound for the generalized linear bandit of the order $\tilde{\mathcal{O}}(\sqrt{T})$.
@@ -139,7 +142,7 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
     \begin{align}
         \mu_\epsilon(x) := \max\{0, (x+\epsilon-1)k\}
     \end{align}
-    with $\epsilon$ a small nummber to be chosen later. For two arms $x_i,x_j$, that have an euclidean distance of at least $||x_i-x_j||\geq\sqrt{2\epsilon}$, simple algebra shows that the scalar product is bounded by $x_i^Tx_j \leq 1-\epsilon$. We want to select the maximum amount $K$ of arms on the unit sphere $\mathcal{S}^{d-1}$, such that each two arms have at least the distance $\sqrt{2\epsilon}$. Results on packing
+    with $\epsilon$ a small number to be chosen later. For two arms $x_i,x_j$, that have an euclidean distance of at least $||x_i-x_j||\geq\sqrt{2\epsilon}$, simple algebra shows that the scalar product is bounded by $x_i^Tx_j \leq 1-\epsilon$. We want to select the maximum amount $K$ of arms on the unit sphere $\mathcal{S}^{d-1}$, such that each two arms have at least the distance $\sqrt{2\epsilon}$. Results on packing
      unit spheres \ref{shannon59} \ref{wyner65} show that we can find such a set $\mathcal{X}$ with cardinality at least
      $$K:=|\mathcal{X}| \geq \left(\frac{1}{\sin(\sqrt{2\epsilon})}+o(1)\right)^{d-1}\geq (2\epsilon)\caret\left(-\frac{d-1}{2}\right).$$
      Choosing $\theta_*\in \mathcal{X}$ at random, this problem is equivalent to the $K$-armed bandit problem where one arm give $\epsilon$ average reward and all other arms $0$.
@@ -274,20 +277,54 @@ The least square estimator is
 \end{align}
 The proofs for the main theorems will rely on an upper and lower bound of $L(\hat{\theta})-L(\theta_*)$ that provides with high probability an upper bound of the immediate regret of the LSE.
 
-The first lemma upper bounds the difference $L(\hat{\theta})-L(\theta_*)$ with high probability.
-\begin{lemma}
+\paragraph{Step 1: } upper bounds on the difference $L(\hat{\theta})-L(\theta_*)$
+\begin{theorem}
     For any $\mu\in M_k$ it holds With probability at least $1-\delta$, that 
-    \begin{align}
-    L(\hat{\theta})-L(\theta_*)\leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})+\color{red}?\color{black}
-    \end{align}
+    $$
+    L(\hat{\theta})-L(\theta_*)\leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})+\uc
+    $$
+\end{theorem}
+\begin{proof}
+\begin{lemma}\label{intapprox}
+\begin{align*}
+&L(\hat{\theta})-L(\theta_*) \leq\uc + \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2
+\end{align*}
 \end{lemma}
-The second lemma ensures that we do not need to worry about the length of $\hat{\theta}$ in our lower bound of $L(\hat{\theta})-L(\theta_*)$.
+Using this lemma, it is sufficient to bound the second term.
+As $\hat{\theta}$ is the minimizer of $L_n$, it holds that
+    \begin{align*}
+        &\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \\
+        \leq &\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 + L_n(\theta_*)-L_n(\hat{\theta})\\
+        = &\frac{2}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))\eta_k\\
+        = &\frac{2}{\sqrt{n}}\sqrt{\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2}\alpha_\mu^T\eta
+\end{align*}
+With $\eta=(\eta_1,\eta_2,...)^T$ and $\alpha_\mu\in\mathbb{R}^n$ a unit vector with components
+$$\alpha_k = \frac{(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))}{\sqrt{\sum_{l=1}^n(\mu(x_l^T\hat{\theta})-\mu(x_l^T\theta_*))^2}}.$$
+$\alpha_\mu$ is determined by the exploration schedule, which only depends on the starting point $x_1\in\mathcal{S}^{d-1}$. Therefore $\alpha$ lays on the $d-1$-dimensional manifold $\alpha_\mu(\mathcal{S}^{d-1})\subset \mathbb{R}^n$.
+\begin{lemma}
+    With probability at least $1-\delta$, we can bound
+    \begin{align*}
+    \sup_{\alpha\in\alpha_\mu(\mathcal{S}^{d-1})}&\alpha^T\eta\\
+    &\leq \uc\sqrt{(d-1)\log(\frac{2n}{d-1})}+\uc\sqrt{\log(\delta^{-1})}
+    \end{align*}
+\end{lemma}
+Using this lemma, we obtain
+\begin{align*}
+    &\sqrt{\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2}\leq \frac{2}{\sqrt{n}}\alpha_\mu^T\eta\\
+    &\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2\leq \frac{4}{n}(\alpha_\mu^T\eta)^2\\
+    &\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2\\
+    &\whp{\leq}\,\,\, \frac{4}{n}\left(\uc\sqrt{(d-1)\log(\frac{2n}{d-1})}+\uc\sqrt{\log(\delta^{-1})}\right)^2\\
+    &\leq \frac{8}{n}\left(\uc(d-1)\log(\frac{2n}{d-1})+\uc\log(\delta^{-1})\right)^2
+\end{align*}
+Combining this with Lemma \ref{intapprox} finalizes the proof.
+\end{proof}
+\paragraph{Step 2:} lower bounds on the difference $L(\hat{\theta})-L(\theta_*)$
+First we need a lemma to ensure, the length of $\hat{\theta}$ doesn't matter
 \begin{lemma}
     Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then for any $\mu\in M_k$
     $$L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*)).$$
 \end{lemma}
-
-We will require two theorems to lower bound this term for the general setting and for the concave setting.
+We give a different lower bound theorem for the concave-convex functions ($\mu\in M_k^1$) and convex-concave ($\mu\in M_k^2$) respectively.
 \begin{theorem}
 For any $\mu \in M_k^1$, $||\tilde{\theta}||=||\theta_*||=1$ it holds that
 $$L(\tilde{\theta})-L(\theta_*) \geq (\mu(1)-\mu(\tilde{\theta}^T\theta_*))(\mu(1)-\mu(0))^{\frac{d+1}{2}}$$
@@ -440,17 +477,6 @@ G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
 \section{Appendix}
 
 Proof lemma upper bound on L
-\begin{proof}
-    As $\hat{\theta}$ is the minimizer of $L_n$, it holds that
-    \begin{align*}
-        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 + L_n(\theta_*)-L_n(\hat{\theta})\\
-        = \frac{2}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))\eta_k\\
-        = \frac{2}{\sqrt{n}}\sqrt{\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2}\sum_{k=1}^n\frac{(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))}{\sqrt{\sum_{l=1}^n(\mu(x_l^T\hat{\theta})-\mu(x_l^T\theta_*))^2}}\eta_k\\
-        w.h.p. \leq   \frac{2}{\sqrt{n}}\sqrt{ \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 }\sigma(c_1\sqrt{\log(2n)}+c_2\sqrt{\log{\delta^{-1}}})\\
-        \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2 \leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})
-    \end{align*}
-    \color{red}TODO: bound $\EV{(\mu(x^T\theta)-\mu(x^T\theta_*))^2}-\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2$ for bound on $L(\hat{\theta})-L(\theta_*)$. Write down the constants $c_1, c_2$ explicitly.\color{black}\\
-\end{proof}
 lemma lower bound 1
 \begin{proof}
 Let $\theta_1$ and $\theta_2$ be the two orthogonal vectors such that $\theta_* = \theta_1-\theta_2$ and $\tilde{\theta}=\theta_1+\theta_2$.\\
