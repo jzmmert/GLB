@@ -216,21 +216,30 @@ In this section, we assume that
 \item $||\theta_*||$ is known.
 \item The derivative $\dot{\mu}$ is axis symmetric and monotonous
 \end{itemize}
+Formally define the sets
+\begin{align*}
+M_k := \{\mu &\in C_1([-1,1]) | \forall x \,\dot{\mu}\geq0,\\
+&\dot{\mu}(x) = \dot{\mu}(-x), \mu(1)-\mu(1-x)\geq k x\}\\
+M_k^1 := \{\mu &\in M_k | \mu|_{[0,1]} \mbox{ convex})\}\\
+M_k^2 := \{\mu &\in M_k | \mu|_{[0,1]} \mbox{ concave})\}
+\end{align*}
+\begin{align*}
+\end{align*}
 \paragraph{Results} 
 \begin{theorem}
-For any GLB problem with the above restrictions on $\mathcal{X}, \mu$ and $\theta$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than 
+For any GLB problem with $\mathcal{X}=\mathcal{B}^{d}_1, \mu\in M_k^1$ and $||\theta_*||=1$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than 
 $$
 \operatorname{Reg}(T) \leq c T^{\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
 $$
 \end{theorem}
 While this is not an upper bound for any link function, it is wide enough to proof that a true gap exists between pseudo-MLE and LSE in this setting. The second theorem answers the question about safe-to-use function and is relevant for practical applications
 \begin{theorem}
-If $\mu$ is additionally to the restrictions above, concave over $\mathbb{R}^+$, then for any GLB problem with the above restrictions on $\mathcal{X}$ and $\theta$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than 
+For any GLB problem with $\mathcal{X}=\mathcal{B}^{d}_1, \mu\in M_k^2$ and $||\theta_*||=1$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than
 $$
 \operatorname{Reg}(T) \leq c \sqrt{T}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
 $$
 \end{theorem}
-\paragraph{Proofs} We will require the following definitions and Lemmata for both proofs.
+\paragraph{Proofs} We will require the following definitions and lemmas for both proofs.
 
 \begin{align*}
     L(\theta) &:= \EV{(\mu(x^T\theta)-R)^2}\nonumber\\
@@ -248,19 +257,20 @@ The proofs for the main theorems will rely on an upper and lower bound of $L(\ha
 
 The first lemma upper bounds the difference $L(\hat{\theta})-L(\theta_*)$ with high probability.
 \begin{lemma}
-    With probability at least $1-\delta$, is holds that 
+    For any $\mu\in M_k$ it holds With probability at least $1-\delta$, that 
     \begin{align}
     L(\hat{\theta})-L(\theta_*)\leq \frac{8}{n}\sigma^2(c_1\log(2n)+c_2\log{\delta^{-1}})+\color{red}?\color{black}
     \end{align}
 \end{lemma}
 The second lemma ensures that we do not need to worry about the length of $\hat{\theta}$ in our lower bound of $L(\hat{\theta})-L(\theta_*)$.
 \begin{lemma}
-    Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then
+    Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then for any $\mu\in M_k$
     $$L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*)).$$
 \end{lemma}
 
 We will require two theorems to lower bound this term for the general setting and for the concave setting.
 \begin{theorem}
+For any $\mu \in M_k^1$, $||\tilde{\theta}||=||\theta_*||=1$ it holds that
 $$L(\tilde{\theta})-L(\theta_*) \geq (\mu(1)-\mu(\tilde{\theta}^T\theta_*))(\mu(1)-\mu(0))^{\frac{d+1}{2}}$$
 \end{theorem}
 \begin{proof}
@@ -285,20 +295,43 @@ For the value inside the integral, it only matters where $x$ intersects the span
     &\left.\left(\mu(\alpha\cos(x-\frac{\beta}{2}))-\mu(\alpha \cos(x+\frac{\beta}{2}))\right)^2\right]\label{dbound}
     \end{align}
     \begin{lemma}
-        For any valid $\mu$, it holds
+        For any $\mu\in M_k^1$, it holds
         \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
             \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{3}{2}
         \end{align*}
     \end{lemma}
+    Using this lemma, we can upper bound \eqref{dbound} 
+    \begin{align*}
+        \geq&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\right.\\
+    &\left.(1-\cos{\beta})(\mu(\alpha)-\mu(0))^\frac{3}{2}\right]
+    \end{align*}
+    Definition of $M_k$, implies that $\mu(\alpha)\geq \mu(1)-(1-\alpha)k$
+    \begin{align*}
+        \geq&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\right.\\
+    &\left.(1-\cos{\beta})\max\{0,\mu(1)-\mu(0)-(1-\alpha)k\}^\frac{3}{2}\right]
+    \end{align*}
+Let $\mu(1)-\mu(0) =k\epsilon$, then
+    \begin{align*}
+        =&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{1-\epsilon}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\right.\\
+    &\left.(1-\cos{\beta})((\epsilon-1+\alpha)k)^\frac{3}{2}\right]\\
+        =&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{\epsilon}\,d\alpha\left[(2\alpha-\alpha^2)^{\frac{d-4}{2}}(1-\alpha)\right.\\
+    &\left.(1-\cos{\beta})((\epsilon-\alpha)k)^\frac{3}{2}\right]\\
+    =&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(2\alpha\epsilon-\alpha^2\epsilon^2)^{\frac{d-4}{2}}(1-\alpha\epsilon)\right.\\
+    &\left.(1-\cos{\beta})((\epsilon-\alpha\epsilon)k)^\frac{3}{2}\epsilon\right]\\
+    =&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\epsilon^{\frac{d+1}{2}}\int_{0}^{1}\,d\alpha\left[(2\alpha-\alpha^2\epsilon)^{\frac{d-4}{2}}(1-\alpha\epsilon)\right.\\
+    &\left.(1-\cos{\beta})((1-\alpha)k)^\frac{3}{2}\right]
+    \end{align*}
+    That concludes the proof.
 \end{proof}
 \begin{theorem}
+For any $\mu \in M_k^2$, $||\tilde{\theta}||=||\theta_*||=1$ it holds that
 $$L(\tilde{\theta})-L(\theta_*) \geq (\mu(1)-\mu(\tilde{\theta}^T\theta_*) )(\mu(1)-\mu(0))^{\frac{1}{2}}$$
 \end{theorem}
 \begin{proof}
 The proof follows the argument of Theorem 8 unit \ref{dbound}. Lemma 8 can be bounded tighter for concave $\mu$
 \begin{lemma}
-    For ... concave $\mu$ ...
+    For any $\mu\in M_k^2$ it holds
 \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
             \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{1}{2}
