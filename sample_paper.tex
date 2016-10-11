@@ -23,9 +23,13 @@
 \newcommand{\sign} {
   \operatorname{sign}}
   \newtheorem{theorem}{Theorem}
+  \newtheorem{remark}{Remark}
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
+\newcommand{\uc}{
+\color{red}C_?\color{black}
+}
 \begin{document}
 
 % If your paper is accepted and the title of your paper is very long,
@@ -55,7 +59,7 @@ Previous work on generalized linear bandits (GLB) suggested that algorithms base
 can achieve a $\sqrt{T}$-regret analogous to the linear bandit setting. We argue however, 
 that these results should be treated as asymptotic results, as they include generally huge constants 
 that might even be a priori unknown. Our novel lower bound for GLB proves that these constants are not
-mere artifacts of the analysis, but that the regret might be as large as $\Omega(\frac{1}{2}+\frac{d-1}{2d+6})$.
+mere artifacts of the analysis, but that the regret might be as large as $\Omega(\frac{d+1}{d+3})$.
 We prove that this lower bound has a matching upper bound up to log factors on a finite time setting with unit ball arms.
 \end{abstract}
 
@@ -132,7 +136,7 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
     Assume $\theta_*\in \mathcal{X}$ as well, then this problem is equivalent to a $K$-armed bandit problem where one good arm gives in average $\epsilon$ reward, while all others are 0.
     
      Given $\epsilon\leq\sqrt{\frac{k}{T}}$, the lower bound for k-armed bandits shows in this case that any algorithm will at least observe a regret of the order 
-     $$\Omega(\epsilon T) = \Omega\left(T\caret\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)\right)$$.
+     $$\Omega(\epsilon T) = \Omega\left(T\caret\left(\frac{d+1}{d+3}\right)\right)$$.
 \end{proof}
 The exponent $\frac{}{}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
 In real world application, we typically deal with relatively large dimensions. 
@@ -194,6 +198,9 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
 \end{proof}
 
 The pseudo-MLE based approach will suffer a regret that is higher than the general lower bound. In the following section, we show that the LSE does not show this behaviour, proving a true gap between the two estimators.
+\begin{remark}
+In section 4, we will look at point symmetric functions $\mu$ for simpler analysis. We want to add that all lower bounds can be equivalently proven for a symmetric $\mu(x) = \mu_\epsilon(x)-\mu_\epsilon(-x)$.
+\end{remark}
 \section{Upper bounds}\label{upperBounds}
 The lower bound given in the previous section is of a relatively odd nature. 
 To our best knowledge, the hasn't been a similar exponent derived for any bandit related lower bound.
@@ -229,7 +236,7 @@ M_k^2 := \{\mu &\in M_k | \mu|_{[0,1]} \mbox{ concave})\}
 \begin{theorem}
 For any GLB problem with $\mathcal{X}=\mathcal{B}^{d}_1, \mu\in M_k^1$ and $||\theta_*||=1$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than 
 $$
-\operatorname{Reg}(T) \leq c T^{\left(\frac{1}{2}+\frac{d-1}{2d+6}\right)}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
+\operatorname{Reg}(T) \leq c T^{\left(\frac{d+1}{d+3}\right)}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
 $$
 \end{theorem}
 While this is not an upper bound for any link function, it is wide enough to proof that a true gap exists between pseudo-MLE and LSE in this setting. The second theorem answers the question about safe-to-use function and is relevant for practical applications
@@ -334,16 +341,53 @@ The proof follows the argument of Theorem 8 unit \ref{dbound}. Lemma 8 can be bo
     For any $\mu\in M_k^2$ it holds
 \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
-            \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{1}{2}
+            \geq (1-\cos{\beta})(\mu(1)-\mu(0))
 \end{align*}
 \end{lemma}
+Using this lemma, we observe
+\begin{align*}
+    &L(\tilde{\theta})-L(\theta_*)\\
+    \geq&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\right.\\
+    &\left.(1-\cos{\beta})(\mu(\alpha)-\mu(0))\right]
+\end{align*}
+Concavity of $\mu|_{[0,1]}$ implies $\mu(\alpha)-\mu(0)\geq \alpha(\mu(1)-\mu(0))$.
+\begin{align*}
+    \geq&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha^{2}\right]\\
+    &(1-\cos{\beta})(\mu(1)-\mu(0))
+\end{align*}
 \end{proof}
 \begin{proof}[Proof of theorem 3]
- Combining Lemma 6, theorem 7 and Lemma 5, it holds
+ We combine Lemma 6, theorem 7 and Lemma 5. Setting $\mu(1)-\mu(0)=\epsilon$, $\mu(1)-\mu(\tilde{\theta}^T\theta_*)=\lambda$ and using $\epsilon^{-1}T\caret\left(\frac{d+1}{d+3}\right)$ many exploration steps, it holds
  \begin{align*}
-     \frac{8}{n}() \geq \lambda \epsilon^{\frac{d+1}{2}}
+     \uc\epsilon T\caret\left(-\frac{1}{2}-\frac{d-1}{2d+6}\right)  \geq \lambda \epsilon\caret\left(\frac{d+1}{2}\right)\\
+     \lambda \leq \uc \epsilon\caret\left(-\frac{d-1}{2}\right)T\caret\left(-\frac{1}{2}-\frac{d-1}{2d+6}\right)\\
  \end{align*}
+ Additionally $\lambda$ is bounded by $\mu(1)-\mu(0)=2\epsilon$
+ \begin{align*}
+ &\min\{\uc \epsilon\caret\left(-\frac{d-1}{2}\right)T\caret\left(\frac{d+1}{d+3}\right),2\epsilon\}\\
+ \leq&\uc T\caret\left(-\frac{2}{d+3}\right) 
+ \end{align*}
+ The first term in the minimum is decreasing in $\epsilon$, while the second term is increasing. Therefore the minimum is obtained if both terms are equal. Playing an arm with immediate regret smaller then $T\caret\left(-\frac{2}{d+3}\right) $ for $T$ steps results in a regret of
+ $$\Reg(T) \leq \uc T\caret\left(\frac{d+1}{d+3}\right)$$
+We set the number of exploration steps, such that with an average immediate regret of $\epsilon$, we suffer exactly the same total regret during exploration, which concludes the proof.
 \end{proof}
+
+\begin{proof}[Proof of theorem 4]
+  The proof goes analogous to theorem 3. We combine Lemma 6, theorem 8 and Lemma 5. Setting $\mu(1)-\mu(0)=\epsilon$, $\mu(1)-\mu(\tilde{\theta}^T\theta_*)=\lambda$ and using $\epsilon^{-1}T\caret\left(\frac{1}{2}\right)$ many exploration steps, it holds
+ \begin{align*}
+     \uc\epsilon T\caret\left(-\frac{1}{2}\right)  \geq \lambda \epsilon\\
+     \lambda \leq \uc T\caret\left(-\frac{1}{2}\right)\\
+ \end{align*}
+ Continuing for $T$ timesteps with this immediate regret bounds the total regret to
+ $$\Reg(T) \leq \sqrt{T}+\uc \sqrt{T} \leq \uc\sqrt{T}.$$
+\end{proof}
+\section{Discussion}
+We have proven that the generalized linear bandit problem, how it was originally proposed, can make it next to impossible to learn a good arm in a finite time. This should be a reminder to take constants seriously that tend to grow to infinity for interesting applications. We have good reason to belief that our lower bounds are tight, even though we assumed a restricted problem. In order to get a general lower bound, one would need to take the following steps.
+\begin{itemize}
+\item Proof lemma \ref for all $\mu$. This is likely to hold true as convex function appear to be the worst case.
+\item Replace the fixed exploration time by a stopping time criteria if only an upper bound of $||\theta_*||$ is available instead of the exact value.
+\end{itemize}
+However this direction of research cannot lead to applicable algorithms, as we have shown in our lower bound. Therefore we will pursue the restriction to convex-concave link functions such as the sigmoid. Our results give hope that those functions might always perform better than the linear function, including all constants in the bound. We will work on ... Tompson Sampling ... 
 \section{SUPPLEMENTARY MATERIAL}
 
 If you need to include additional appendices during submission, you
