@@ -27,6 +27,7 @@
   \newtheorem{remark}{Remark}
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{lemma*}{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newcommand{\uc}{
 \color{red}C_?\color{black}
@@ -124,9 +125,11 @@ $$\mu(1)-\mu(1-x)\geq kx$$
 For short notation, we will define the set of valid link functions as
 $$M_k := \{\mu \in C_1([-1,1]) | \dot{\mu}\geq 0, \mu(1)-\mu(1-x)\geq kx\}$$
 
-\section{Lower bounds} \label{lowerBounds}
+\section{Lower bounds}\label{lowerBounds}
 
-We now present the main results of the paper. First a algorithm independent lower bounds for non-decreasing link functions proves that the constants are not mere artifacts of the analysis. Second an algorithm dependent bound proofs that there is an insuperable gap when using the pseudo MLE for subgaussian noise.
+We now present the main results of the paper. 
+First a algorithm independent lower bounds for non-decreasing link functions proves that the constants are not mere artifacts of the analysis. 
+Second an algorithm dependent bound proofs that there is an insuperable gap when using the pseudo MLE for sub-gaussian noise.
 
 \subsection{Algorithm independent bound}
 \begin{theorem}
@@ -144,7 +147,10 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
     \end{align}
     with $\epsilon$ a small number to be chosen later. For two arms $x_i,x_j$, that have an euclidean distance of at least $||x_i-x_j||\geq\sqrt{2\epsilon}$, simple algebra shows that the scalar product is bounded by $x_i^Tx_j \leq 1-\epsilon$. We want to select the maximum amount $K$ of arms on the unit sphere $\mathcal{S}^{d-1}$, such that each two arms have at least the distance $\sqrt{2\epsilon}$. Results on packing
      unit spheres \ref{shannon59} \ref{wyner65} show that we can find such a set $\mathcal{X}$ with cardinality at least
-     $$K:=|\mathcal{X}| \geq \left(\frac{1}{\sin(\sqrt{2\epsilon})}+o(1)\right)^{d-1}\geq (2\epsilon)\caret\left(-\frac{d-1}{2}\right).$$
+     \begin{align*}
+     K:=|\mathcal{X}| \geq& \left(\frac{1}{\sin(\sqrt{2\epsilon})}+o(1)\right)^{d-1}\\
+     &\geq (2\epsilon)\caret\left(-\frac{d-1}{2}\right).
+     \end{align*}
      Choosing $\theta_*\in \mathcal{X}$ at random, this problem is equivalent to the $K$-armed bandit problem where one arm give $\epsilon$ average reward and all other arms $0$.
      
      The lower bound proof of \cite{Auer} implies that as long as $k\epsilon\leq \sqrt{\frac{K}{T}}$, the total regret is lower bounded by $\Omega(k\epsilon T)$. Setting
@@ -169,7 +175,8 @@ For any finite time horizon $T$, there exists a generalized linear bandit proble
 The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
 \end{corollary}
 \begin{proof}
-    Define the GLB Problem as follows:\\
+    
+    Define the GLB Problem as follows:
     \begin{itemize}
     \item $\mu(x) := \max\{0, x+\epsilon-1\}$
     \item $\mathcal{X} = \mathcal{S}^1$, the $2$-d unit circle
@@ -180,20 +187,18 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
     After $T$ steps of uniform exploration, the psuedo-MLE is the solution to
     $$\sum_{k=1}^T\left(\mu(x_k^T\theta_*)-\mu(x_k^T\hat{\theta}_P)+\eta_k\right)x_k=0.$$
     $$\sum_{k=1}^T\mu(x_k^T\hat{\theta}_P)x_k = \sum_{k=1}^T\mu(x_k^T\theta_*)x_k + \boldsymbol{\eta},$$
-    with $\boldsymbol{\eta}\sim \mathcal{N}\left(0,\begin{pmatrix}
-    \sum_{k=1}^T(x_k^{(1)})^2&0\\
-    0&\sum_{k=1}^T(x_k^{(2)})^2
-    \end{pmatrix}\right)$.
+    with $\boldsymbol{\eta}\sim \mathcal{N}\left(0,\sum_{k=1}^Tx_kx_k^T)\right)$.
     We argue that this estimator can in average not be better, than if we would perform a continuous exploration.
     By choosing an arbitrary uniform distribution of points on the circle, we are adding additional noise over continuous exploration. We are looking at the estimator given by
     $$\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\hat{\theta}_C)x\,dx = \frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx + \boldsymbol{\eta},$$
-    with $\boldsymbol{\eta}\sim \mathcal{N}(0,T\mathbf{I})$.
+    with $\boldsymbol{\eta}\sim \mathcal{N}(0,\frac{T}{2\pi}\int_{\mathcal{S}^1}xx^T\,dx)=\mathcal{N}(0,T\mathbf{I})$.
     The left hand side is co-linear to $\hat{\theta}_C$ due to symmetry, the integral on the right hand side can be explicitly solved.
     \begin{align*}
     &\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx = \frac{T}{2\pi}\int_{0}^{2\pi}\mu(\cos(x))\cos(x)\theta_*\,dx \\
     =&\frac{T}{\pi}\theta_*\int_{0}^{\pi}\mu(\cos(x))\cos(x)\,dx=\frac{T}{\pi}\theta_*\int_{0}^{1}\frac{\mu(x)x}{\sqrt{1-x^2}}\,dx\\
     =&\frac{T}{\pi}\theta_*\int_{1-\epsilon}^{1}\frac{x-x^2}{\sqrt{1-x^2}}\,dx\\
-    =&\frac{T}{2\pi}\left(\sin^{-1}(1-\epsilon)-\frac{\pi}{2}+(1+\epsilon)\sqrt{2\epsilon-\epsilon^2}\right)\theta_*=c_\epsilon T\theta_*
+    =&\frac{T}{2\pi}\left(\sin^{-1}(1-\epsilon)-\frac{\pi}{2}+(1+\epsilon)\sqrt{2\epsilon-\epsilon^2}\right)\theta_*\\
+    =&c_\epsilon T\theta_*
     \end{align*}
     The arm chosen after the Exploration phase is therefore:
     $$\hat{x} = \frac{\hat{\theta}_C}{||\hat{\theta}_C||}=\frac{(c_\epsilon T+\eta_1)\binom{1}{0}+\eta_2\binom{0}{1}}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}.$$
@@ -301,7 +306,7 @@ As $\hat{\theta}$ is the minimizer of $L_n$, it holds that
 With $\eta=(\eta_1,\eta_2,...)^T$ and $\alpha_\mu\in\mathbb{R}^n$ a unit vector with components
 $$\alpha_k = \frac{(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))}{\sqrt{\sum_{l=1}^n(\mu(x_l^T\hat{\theta})-\mu(x_l^T\theta_*))^2}}.$$
 $\alpha_\mu$ is determined by the exploration schedule, which only depends on the starting point $x_1\in\mathcal{S}^{d-1}$. Therefore $\alpha$ lays on the $d-1$-dimensional manifold $\alpha_\mu(\mathcal{S}^{d-1})\subset \mathbb{R}^n$.
-\begin{lemma}
+\begin{lemma}\label{supbound}
     With probability at least $1-\delta$, we can bound
     \begin{align*}
     \sup_{\alpha\in\alpha_\mu(\mathcal{S}^{d-1})}&\alpha^T\eta\\
@@ -320,7 +325,7 @@ Combining this with Lemma \ref{intapprox} finalizes the proof.
 \end{proof}
 \paragraph{Step 2:} lower bounds on the difference $L(\hat{\theta})-L(\theta_*)$
 First we need a lemma to ensure, the length of $\hat{\theta}$ doesn't matter
-\begin{lemma}
+\begin{lemma}\label{normthetabound}
     Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then for any $\mu\in M_k$
     $$L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*)).$$
 \end{lemma}
@@ -350,7 +355,7 @@ For the value inside the integral, it only matters where $x$ intersects the span
         &=2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\int_{0}^{2\pi}\, dx\right.\nonumber\\
     &\left.\left(\mu(\alpha\cos(x-\frac{\beta}{2}))-\mu(\alpha \cos(x+\frac{\beta}{2}))\right)^2\right]\label{dbound}
     \end{align}
-    \begin{lemma}
+    \begin{lemma}\label{convexbound}
         For any $\mu\in M_k^1$, it holds
         \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
@@ -386,7 +391,7 @@ $$L(\tilde{\theta})-L(\theta_*) \geq (\mu(1)-\mu(\tilde{\theta}^T\theta_*) )(\mu
 \end{theorem}
 \begin{proof}
 The proof follows the argument of Theorem 8 unit \ref{dbound}. Lemma 8 can be bounded tighter for concave $\mu$
-\begin{lemma}
+\begin{lemma}\label{concavebound}
     For any $\mu\in M_k^2$ it holds
 \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
@@ -437,10 +442,7 @@ We have proven that the generalized linear bandit problem, how it was originally
 \item Replace the fixed exploration time by a stopping time criteria if only an upper bound of $||\theta_*||$ is available instead of the exact value.
 \end{itemize}
 However this direction of research cannot lead to applicable algorithms, as we have shown in our lower bound. Therefore we will pursue the restriction to convex-concave link functions such as the sigmoid. Our results give hope that those functions might always perform better than the linear function, including all constants in the bound. We will work on ... Tompson Sampling ... 
-\section{SUPPLEMENTARY MATERIAL}
 
-If you need to include additional appendices during submission, you
-can include them in the supplementary material file.
 
 
 \newpage
@@ -473,11 +475,39 @@ D.C.: Spartan Books.
 G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
   Computation} {\bf 1}(3):321-323.
 
-
+\newpage
 \section{Appendix}
-
-Proof lemma upper bound on L
-lemma lower bound 1
+\begin{lemma*}[\ref{intapprox}]
+\begin{align*}
+&L(\hat{\theta})-L(\theta_*) \leq\uc + \frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2
+\end{align*}
+\end{lemma*}
+\begin{proof}
+Per definition of $L$:
+$$L(\hat{\theta})-L(\theta_*) = \EV{(\mu(\hat{\theta}^Tx)-\mu(\theta_*^Tx))^2}.$$
+We need to bound the discrete integral approximation
+\begin{align*}
+    \frac{1}{|\mathcal{S}^{d-1}|}&\int_{|\mathcal{S}^{d-1}|}(\mu(\hat{\theta}^Tx)-\mu(\theta_*^Tx))^2\,dx\\
+    &-\frac{1}{n}\sum_{k=1}^n(\mu(x_k^T\hat{\theta})-\mu(x_k^T\theta_*))^2
+\end{align*}
+...
+\end{proof}
+\begin{lemma*}[\ref{supbound}]
+    With probability at least $1-\delta$, we can bound
+    \begin{align*}
+    \sup_{\alpha\in\alpha_\mu(\mathcal{S}^{d-1})}&\alpha^T\eta\\
+    &\leq \uc\sqrt{(d-1)\log(\frac{2n}{d-1})}+\uc\sqrt{\log(\delta^{-1})}
+    \end{align*}
+\end{lemma*}
+\begin{proof}
+transfer from Problem 1.6 on MIT18\_S997S15\_Chapter1.pdf\\
+\color{red}Todo: find an $\epsilon$ net that covers $\alpha(\mathcal{S}^{d-1})$\color{black}\
+\\
+\end{proof}
+\begin{lemma*}[\ref{normthetabound}]
+    Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then for any $\mu\in M_k$
+    $$L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*)).$$
+\end{lemma*}
 \begin{proof}
 Let $\theta_1$ and $\theta_2$ be the two orthogonal vectors such that $\theta_* = \theta_1-\theta_2$ and $\tilde{\theta}=\theta_1+\theta_2$.\\
 Define the two sets
@@ -486,15 +516,41 @@ Define the two sets
 \mathcal{B}_2 &= \left\{x|\sign(x^T\theta_1)=-\sign(x^T\theta_2)\right\}.
 \end{align*}
 Due to Symmetry it holds that 
-$$\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}=\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_2}$$
-If $||\hat{\theta}||_2 > ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_1$.\\
-If $||\hat{\theta}||_2 < ||\tilde{\theta}||_2$, then $(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2$ for all $x\in \mathcal{B}_2$.\\
+\begin{align*}
+&\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}\\
+&=\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_2}
+\end{align*}
+    
+If $||\hat{\theta}||_2 > ||\tilde{\theta}||_2$, then for all $x\in \mathcal{B}_1$ $$(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2.$$
+If $||\hat{\theta}||_2 < ||\tilde{\theta}||_2$, then for all $x\in \mathcal{B}_2$ $$(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2 \geq (\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2.$$
 Finally we get
 \begin{align*}
      &L(\hat{\theta})-L(\theta_*) = \EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}\\
-     =& \frac{1}{2}\left(\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}+\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}|x\in\mathcal{B}_2\right)\\
+     =& \frac{1}{2}\left(\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2|x\in\mathcal{B}_1}\right.\\
+     &\left.+\EV{(\mu(x^T\hat{\theta})-\mu(x^T\theta_*))^2}|x\in\mathcal{B}_2\right)\\
      \geq& \frac{1}{2}\EV{(\mu(x^T\tilde{\theta})-\mu(x^T\theta_*))^2}=\frac{1}{2}(L(\tilde{\theta})-L(\theta_*))
 \end{align*}
+\end{proof}
+
+    \begin{lemma*}[\ref{convexbound}]
+        For any $\mu\in M_k^1$, it holds
+        \begin{align*}
+            \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
+            \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{3}{2}
+        \end{align*}
+    \end{lemma*}
+    \begin{proof}
+    
+    \end{proof}
+    \begin{lemma*}[\ref{concavebound}]
+    For any $\mu\in M_k^2$ it holds
+\begin{align*}
+            \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
+            \geq (1-\cos{\beta})(\mu(1)-\mu(0))
+\end{align*}
+\end{lemma*}
+\begin{proof}
+
 \end{proof}
 \end{document}
 
