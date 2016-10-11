@@ -60,7 +60,9 @@ can achieve a $\sqrt{T}$-regret analogous to the linear bandit setting. We argue
 that these results should be treated as asymptotic results, as they include generally huge constants 
 that might even be a priori unknown. Our novel lower bound for GLB proves that these constants are not
 mere artifacts of the analysis, but that the regret might be as large as $\Omega(\frac{d+1}{d+3})$.
-We prove that this lower bound has a matching upper bound up to log factors on a finite time setting with unit ball arms.
+We prove that this lower bound has a matching upper bound up to log factors at least on a slightly restricted setting.
+
+
 \end{abstract}
 
 \section{Introduction}
@@ -88,7 +90,7 @@ Additionally we are going to prove that the estimator of $\theta_*$ ,used in the
 The agent plays for a total of $T$ rounds and chooses an arm $X_t$ at each round. 
 We assume that the arms come from a closed subset $S$ of the $d$-dimensional euclidean space $x_i \in S\subset\mathbb{R}^d$, are bounded in length by L and that the features are known to the agent.
 There exists a bounded unknown parameter $\theta_*\in \mathbb{R}$, $||\theta_*||_2 \leq R$.
-When the agent plays an arm $x_i$ at time $t$, he will observe the reward $R_t = \mu(x_i^T\theta_*) +\eta_t$. $\mu$ is hereby a non-decreasing link function that is $k_\mu$-Lipschitz and $\eta_t$ is a random noise that is $\lambda$-subgaussian. The optimal arm is denoted $x_*$: $\max_x\mu(x^T\theta_*) = \mu(x_*^T\theta_*)$. For a given strategy, we denote with $x_t$ the arm that is chosen at time $t$.\\
+When the agent plays an arm $x_i$ at time $t$, he will observe the reward $R_t = \mu(x_i^T\theta_*) +\eta_t$. $\mu$ is hereby a non-decreasing link function that is $k_\mu$-Lipschitz and $\eta_t$ is a random noise that is $\sigma$-subgaussian. The optimal arm is denoted $x_*$: $\max_x\mu(x^T\theta_*) = \mu(x_*^T\theta_*)$. For a given strategy, we denote with $x_t$ the arm that is chosen at time $t$.\\
 The immediate regret at time $t$ is defined as 
 $$\Reg_t := \mathbb{E}\left[R_t|X_t=x_*\right]-\mathbb{E}\left[R_t|X_t=x_t\right]$$,
 and the total regret or simply regret is the cumulative sum of immediate regrets
@@ -113,6 +115,11 @@ W.l.o.g. we can reformulate the problem such that $||x||,||\theta_*||\leq 1$ and
 $\mu(x) = (1+\exp(-LR_{\max}x))^{-1}$.
 In this case $k_\mu = \frac{LR}{4}$, $c_\mu^{-1} = \left(\frac{LR}{(e^{0.5LR}+e^{-0.5LR})^2}\right)^{-1} > \frac{\exp(LR)}{LR}$. The constant in front of $T$ grows exponentially with the possible length of $\theta_*$ and the arms, rendering this bound meaningless for most applications.
 
+From now on, we will replace the restriction $\dot{\mu}\geq c_\mu >0$ by simply requiring $\dot{\mu}\geq0$. This is taking the closure of the open cone $\dot{\mu}>0$. Therefore any lower bound on finite time, can be matched arbitrarily close for the open cone, as long as we choose $c_\mu$ sufficiently small.
+Additionally, we relax the constant $k_\mu$ by reducing the Lipschitz-property to a single point, i.e.
+$$\mu(1)-\mu(1-x)\geq kx$$
+For short notation, we will define the set of valid link functions as
+$$M_k := \{\mu \in C_1([-1,1]) | \dot{\mu}\geq 0, \mu(1)-\mu(1-x)\geq kx\}$$
 
 \section{Lower bounds} \label{lowerBounds}
 
@@ -120,7 +127,8 @@ We now present the main results of the paper. First a algorithm independent lowe
 
 \subsection{Algorithm independent bound}
 \begin{theorem}
-For any finite time horizon $T>4^5$ there exists a generalized linear bandit problem with finitely many arms, a 1-Lipschitz link function $\mu$, such that the regret of any algorithm will be at least of the order $\Omega(T^{\frac{1}{2}+\frac{1}{10}})$.
+For any finite time horizon $T>\uc$ there exists a generalized linear bandit problem with finitely many arms $\mathcal{X}\subset\mathbb{R}^d$, $\mu\in M_k$, such that the regret of any algorithm will be at least
+$$\Reg(T) \geq \uc T\caret\left(\frac{d+1}{d+3}\right)$$.
 \end{theorem}
 \begin{corollary}
 It is impossible to derive a $c_\mu$ independent upper bound for the generalized linear bandit of the order $\tilde{\mathcal{O}}(\sqrt{T})$.
@@ -129,16 +137,20 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
     Define the GLB Problem $P(T)$ as follows:\\
     We chose the link function 
     \begin{align}
-        \mu(x) := \max\{0, x+\epsilon-1\}
+        \mu_\epsilon(x) := \max\{0, (x+\epsilon-1)k\}
     \end{align}
-    with $\epsilon = \frac{1}{2}T\caret(-\frac{2}{d+3})$.
-    Results on packing unit spheres (details in the Appendix) show that we can find a set $\mathcal{X} \subset \mathcal{B}_1$ of vectors in the $d$-unit ball of cardinality at least $|\mathcal{X}|\geq T\caret{\frac{d-1}{d+3}}=:K$. Any two distinct arms $x_i,x_j\in\mathcal{X}$ are far enough away from each other to ensure $x_i^Tx_j \leq 1-\epsilon$.
-    Assume $\theta_*\in \mathcal{X}$ as well, then this problem is equivalent to a $K$-armed bandit problem where one good arm gives in average $\epsilon$ reward, while all others are 0.
+    with $\epsilon$ a small nummber to be chosen later. For two arms $x_i,x_j$, that have an euclidean distance of at least $||x_i-x_j||\geq\sqrt{2\epsilon}$, simple algebra shows that the scalar product is bounded by $x_i^Tx_j \leq 1-\epsilon$. We want to select the maximum amount $K$ of arms on the unit sphere $\mathcal{S}^{d-1}$, such that each two arms have at least the distance $\sqrt{2\epsilon}$. Results on packing
+     unit spheres \ref{shannon59} \ref{wyner65} show that we can find such a set $\mathcal{X}$ with cardinality at least
+     $$K:=|\mathcal{X}| \geq \left(\frac{1}{\sin(\sqrt{2\epsilon})}+o(1)\right)^{d-1}\geq (2\epsilon)\caret\left(-\frac{d-1}{2}\right).$$
+     Choosing $\theta_*\in \mathcal{X}$ at random, this problem is equivalent to the $K$-armed bandit problem where one arm give $\epsilon$ average reward and all other arms $0$.
+     
+     The lower bound proof of \cite{Auer} implies that as long as $k\epsilon\leq \sqrt{\frac{K}{T}}$, the total regret is lower bounded by $\Omega(k\epsilon T)$. Setting
+     $$\epsilon = \frac{1}{2}k\caret\left(-\frac{4}{d+3}\right)T\caret\left(-\frac{2}{d+3}\right)$$
+     satisfies this inequality. So the total in regret will be at least of the order
+     $$\Omega \left(k\caret\left(\frac{d-1}{d+3}\right)T\caret\left(\frac{d+1}{d+3}\right)\right)$$
     
-     Given $\epsilon\leq\sqrt{\frac{k}{T}}$, the lower bound for k-armed bandits shows in this case that any algorithm will at least observe a regret of the order 
-     $$\Omega(\epsilon T) = \Omega\left(T\caret\left(\frac{d+1}{d+3}\right)\right)$$.
 \end{proof}
-The exponent $\frac{}{}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
+The exponent $\frac{d+1}{d+3}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
 In real world application, we typically deal with relatively large dimensions. 
 Unless we are very careful about the chosen link function, it might be impossible to learn anything meaningfull in a given time.
 That is why we distinguish in section \ref{upperBounds} between different families of link functions, to provide safe-to-use applications.
@@ -182,7 +194,7 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
     \end{align*}
     The arm chosen after the Exploration phase is therefore:
     $$\hat{x} = \frac{\hat{\theta}_C}{||\hat{\theta}_C||}=\frac{(c_\epsilon T+\eta_1)\binom{1}{0}+\eta_2\binom{0}{1}}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}.$$
-    We are interested for a bound on the immediate regret for choosing $\hat{x}$. Given that $\eta_1,\eta_2\sim \mathcal{0,T}$ i.i.d, with probability at least $\frac{1}{4}$, we have $\eta_1\leq0$ and $\eta_2 \geq T$.
+    We are interested for a bound on the immediate regret for choosing $\hat{x}$. Given that $\eta_1,\eta_2\sim \mathcal{N}(0,T)$ i.i.d, with probability at least $\frac{1}{4}$, we have $\eta_1\leq0$ and $\eta_2 \geq T$.
     $$
     \hat{x}^T\theta_* = \frac{c_\epsilon T+\eta_1}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}\leq \frac{c_\epsilon T}{\sqrt{c^2_\epsilon T^2 + T}}
     $$
