@@ -359,7 +359,7 @@ For the value inside the integral, it only matters where $x$ intersects the span
         For any $\mu\in M_k^1$, it holds
         \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
-            \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{3}{2}
+            \geq \frac{1}{\sqrt{2k}}\max\{(1-\cos{\beta})k,\mu(1)-\mu(0)\}(\mu(1)-\mu(0))^\frac{3}{2}
         \end{align*}
     \end{lemma}
     Using this lemma, we can upper bound \eqref{dbound} 
@@ -395,7 +395,7 @@ The proof follows the argument of Theorem 8 unit \ref{dbound}. Lemma 8 can be bo
     For any $\mu\in M_k^2$ it holds
 \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
-            \geq (1-\cos{\beta})(\mu(1)-\mu(0))
+            \geq 4\pi(\max\{(1-\cos{\beta})k,\mu(1)-\mu(0))(\mu(1)-\mu(0))
 \end{align*}
 \end{lemma}
 Using this lemma, we observe
@@ -521,21 +521,97 @@ Finally we get
         For any $\mu\in M_k^1$, it holds
         \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
-            \geq (1-\cos{\beta})(\mu(1)-\mu(0))^\frac{3}{2}
+            \geq \frac{1}{\sqrt{2k}}\max\{(1-\cos{\beta})k,\mu(1)-\mu(0)\}(\mu(1)-\mu(0))^\frac{3}{2}
         \end{align*}
     \end{lemma*}
     \begin{proof}
-    
+    First we show the statement holds for $\mu\in M_1^1$. We denote $\mu(1)-\mu(0)=\epsilon$. Assume $\beta\geq\cos^{-1}(1-\epsilon)$ then the RHS is constant. With the following Lemma
+    \begin{lemma}
+        For any $\mu\in M_k$ and $\beta \in[0,2\pi]$, the function
+        $$\int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx$$
+        is monotonically non-decreasing over $\beta$.
+    \end{lemma}
+    we only need to proof the case $\beta\leq\cos^{-1}(1-\epsilon)$.
+    Given that $\dot{\mu}$ is symmetric, we have
+    \begin{align*}
+        &\int_{0}^{2\pi}\left(\mu(\cos(x+\frac{\beta}{2}))-\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+        &=4\int_{0}^{\frac{\pi}{2}}\left(\mu(\cos(x+\frac{\beta}{2}))-\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+        &=4\int_{0}^{\frac{\pi}{2}}\left(\mu(\cos(x)\cos(\frac{\beta}{2})-\sin(x)\sin(\frac{\beta}{2}) )\right.\\
+        &\left.\qquad-\mu(\cos(x)\cos(\frac{\beta}{2})+\sin(x)\sin(\frac{\beta}{2}) )\right)^2\, dx\\
+        &=4\int_{0}^{1}\left(\mu(x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2}) )\right.\\
+        &\left.\qquad-\mu(x\cos(\frac{\beta}{2})+\sqrt{1-x^2}\sin(\frac{\beta}{2}) )\right)^2\frac{1}{\sqrt{1-x^2}}\, dx.\\
+        \end{align*}
+    Convexity allows the estimation:
+    \begin{align*}
+        &\geq4\int_{0}^{1}\left(\dot{\mu}(\max\{0,x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2})\} )\right.\\
+        &\left.\qquad\qquad\cdot 2 \sqrt{1-x^2}\sin(\frac{\beta}{2})\right)^2\frac{1}{\sqrt{1-x^2}}\, dx.\\
+        &=\int_{0}^{1}\dot{\mu}\left(\max\{0,x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2})\} \right)^2\\
+        &\qquad\qquad\cdot  \sqrt{1-x^2}\, dx16\sin(\frac{\beta}{2})^2.\\
+    \end{align*}
+    $\max\{0,x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2})\}$ is increasing in $x$, while $\sqrt{1-x^2}$ is decreasing. Therefore the smallest this term can get, given a fixed $\epsilon$, is the function 
+    $$\mu_\epsilon = \max\{0,x-1+\epsilon\}.$$
+    \begin{align*}
+        &\geq\int_{0}^{1}\mathbb{I}_{x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2})\geq 1-\epsilon}\sqrt{1-x^2}\, dx16\sin(\frac{\beta}{2})^2.\\
+    \end{align*}
+    To determine the ranges of the indicator set, we have to solve
+    \begin{align*}
+        &x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2})= 1-\epsilon\\
+        &\cos(\cos^{-1}(x)+\frac{\beta}{2})= 1-\epsilon\\
+        &\cos^{-1}(x)+\frac{\beta}{2}= \cos^{-1}(1-\epsilon)\\
+    \end{align*}
+    $x$ is increasing with beta, $\beta\leq \cos^{-1}(1-\epsilon)$, therefore
+    \begin{align*}
+    &\cos^{-1}(x)\geq \frac{1}{2}\cos^{-1}(1-\epsilon)\\
+    &x \leq \sqrt{1-\frac{\epsilon}{2}}
+    \end{align*}
+    We can bound the integral with
+    \begin{align*}
+        &\geq\int_{0}^{1}\mathbb{I}_{x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2})\geq 1-\epsilon}\sqrt{1-x^2}\, dx16\sin(\frac{\beta}{2})^2.\\
+        &\geq 16\sin(\frac{\beta}{2})^2\int_{\sqrt{1-\frac{\epsilon}{2}}}^1\sqrt{1-x^2}\,dx\\
+        &\geq 16\sin(\frac{\beta}{2})^2\int_{1-\frac{\epsilon}{2}}^1\frac{\sqrt{1-x}}{2\sqrt{x}}\,dx\\
+        &= 16\sin(\frac{\beta}{2})^2\int_{0}^{\frac{\epsilon}{2}}\frac{\sqrt{x}}{2\sqrt{1-\frac{\epsilon}{2}+x}}\,dx\\
+        &= 16\sin(\frac{\beta}{2})^2\int_{0}^{1}\frac{\sqrt{x}}{2\sqrt{1-\frac{\epsilon}{2}(1-x)}}(\frac{\epsilon}{2})^{\frac{3}{2}}\,dx\\
+        &\geq 2^{\frac{5}{2}}\sin(\frac{\beta}{2})^2\epsilon^{\frac{3}{2}}\int_{0}^{1}\frac{\sqrt{x}}{2}\,dx=\sqrt{2}\sin(\frac{\beta}{2})^2\epsilon^{\frac{3}{2}}\\
+    \end{align*}
+    Observe $2\sin(\frac{\beta}{2})^2 = 1-\cos{\beta}$, which concludes the proof for $k=1$.
+    For general $k$, observe that for any $\mu\in M_k \Rightarrow \frac{1}{k}\mu\in M_1$. So
+    \begin{align*}
+ &\int_{0}^{2\pi}\left(\mu(\cos(x+\frac{\beta}{2}))-\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+ &=k^2\int_{0}^{2\pi}\left(\frac{1}{k}\mu(\cos(x+\frac{\beta}{2}))-\frac{1}{k}\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+ &\geq \frac{k^2}{\sqrt{2}} \max\{1-\cos{\beta},\frac{\epsilon}{k}\}(\frac{\epsilon}{k})^{\frac{3}{2}}\\
+& = \frac{1}{\sqrt{2k}} \max\{(1-\cos{\beta)k},\epsilon\}\epsilon^{\frac{3}{2}}\\
+    \end{align*}
     \end{proof}
     \begin{lemma*}[\ref{concavebound}]
     For any $\mu\in M_k^2$ it holds
 \begin{align*}
             \int_{0}^{2\pi}\left(\mu(\cos(x-\frac{\beta}{2}))-\mu( \cos(x+\frac{\beta}{2}))\right)^2\, dx\\
-            \geq (1-\cos{\beta})(\mu(1)-\mu(0))
+            \geq 4\pi(\max\{(1-\cos{\beta})k,\mu(1)-\mu(0))(\mu(1)-\mu(0))
 \end{align*}
 \end{lemma*}
 \begin{proof}
-
+following the same line of proof as in Lemma \ref{convexbound}. For concave functions, $k\geq\epsilon=\mu(1)-\mu(0)\geq \frac{1}{2}k$. Therefore setting $k=1$ implies $\epsilon\leq 1$. Again, we only need to consider $\beta\geq \cos^{-1}(1-\epsilon)$.
+With concavety, we can estimate
+\begin{align*}
+    &\int_{0}^{2\pi}\left(\mu(\cos(x+\frac{\beta}{2}))-\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+     &=4\int_{0}^{1}\left(\mu(x\cos(\frac{\beta}{2})-\sqrt{1-x^2}\sin(\frac{\beta}{2}) )\right.\\
+     &\left.\qquad-\mu(x\cos(\frac{\beta}{2})+\sqrt{1-x^2}\sin(\frac{\beta}{2}) )\right)^2\frac{1}{\sqrt{1-x^2}}\, dx.\\
+     &\geq16\sin(\frac{\beta}{2})^2\int_{0}^{1}\dot{\mu}\left(x\cos(\frac{\beta}{2})+\sqrt{1-x^2}\sin(\frac{\beta}{2}) \right)^2\sqrt{1-x^2}\, dx.\\
+\end{align*}
+The minimizer for concave function is the linear function, because the term inside $\dot{\mu}$ is monotonically increasing.
+$$\mu_l = \frac{x}{\epsilon}$$
+\begin{align*}
+    &\geq16\sin(\frac{\beta}{2})^2\int_{0}^{1}\dot{\mu}\left(x\cos(\frac{\beta}{2})+\sqrt{1-x^2}\sin(\frac{\beta}{2}) \right)^2\sqrt{1-x^2}\, dx.\\
+    &\geq16\sin(\frac{\beta}{2})^2\int_{0}^{1}\frac{\sqrt{1-x^2}}{\epsilon^2}\, dx.\\
+    &=8\pi\sin(\frac{\beta}{2})^2\epsilon\epsilon^{-3}\geq 4\pi(1-\cos(\beta))\epsilon\\
+\end{align*}
+ For general $k$, observe that for any $\mu\in M_k \Rightarrow \frac{1}{k}\mu\in M_1$. So
+    \begin{align*}
+ &\int_{0}^{2\pi}\left(\mu(\cos(x+\frac{\beta}{2}))-\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+ &=k^2\int_{0}^{2\pi}\left(\frac{1}{k}\mu(\cos(x+\frac{\beta}{2}))-\frac{1}{k}\mu( \cos(x-\frac{\beta}{2}))\right)^2\, dx\\
+ &\geq 4\pi \max\{1-\cos{\beta},\frac{\epsilon}{k}\}(\frac{\epsilon}{k})\\
+& = 4\pi \max\{(1-\cos{\beta)k},\epsilon\}\epsilon\\
+    \end{align*}
 \end{proof}
 \end{document}
 
