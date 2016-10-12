@@ -75,10 +75,10 @@ We are concerned about the problem of general linear bandits (GLB) which are an 
 In the K-armed bandit problem, an agent selects one out of K possible arms at each time and immediately observes a reward.
 The reward depends only on the selected arm and is assumed to be drawn out of a probability distribution. 
 The means of the distributions are unknown and independent of each other, but the tails are all assumed to be sub-Gaussian.
-In these problems, the agent is faced with a fundamental trade-off between playing arms to gain information about the reward structure (Exploration) and chooses the arm that is most promising given the available information (Exploitation).
-For linear bandits, we model an an underlying structure that links the mean rewards for different arms. 
+In these problems, the agent is faced with a fundamental trade-off between playing arms to gain information about the reward structure (Exploration) and choosing the arm that is most promising given the available information (Exploitation).
+For linear bandits, we model an underlying structure that links the mean rewards for different arms. 
 In this setting, each arm is attached to a $d$-dimensional feature vector $x$ and the mean reward is given by $x^T\theta_*$, for an unknown parametrization $\theta_*$.
-Because this allows to infer information about arms that were never played, meaningful results exist even for infinitely many arms.
+As the features allow the inference of information about arms that were never played, meaningful results exist even for infinitely many arms.
 GLB also assumes a feature structure, but the mean reward is $\mu(x^T\theta_*)$ for a non-decreasing link function $\mu$.
 
 For both the K-armed bandit as well as the linear bandit problems, algorithms with favourable theoretical properties exist. The regret, that is the accumulated difference of rewards between playing the optimal arm at each time-step and following the algorithm, is bounded by $\tilde{\mathcal{O}}(\sqrt{T})$ with high probability. 
@@ -94,7 +94,7 @@ Additionally we are going to prove that the estimator of $\theta_*$ ,used in the
 The agent plays for a total of $T$ rounds and chooses an arm $X_t$ at each round. 
 We assume that the arms come from a closed subset $S$ of the $d$-dimensional euclidean space $x_i \in S\subset\mathbb{R}^d$, are bounded in length by L and that the features are known to the agent.
 There exists a bounded unknown parameter $\theta_*\in \mathbb{R}$, $||\theta_*||_2 \leq R$.
-When the agent plays an arm $x_i$ at time $t$, he will observe the reward $R_t = \mu(x_i^T\theta_*) +\eta_t$. $\mu$ is hereby a non-decreasing link function that is $k_\mu$-Lipschitz and $\eta_t$ is a random noise that is $\sigma$-subgaussian. The optimal arm is denoted $x_*$: $\max_x\mu(x^T\theta_*) = \mu(x_*^T\theta_*)$. For a given strategy, we denote with $x_t$ the arm that is chosen at time $t$.\\
+When the agent plays an arm $x_i$ at time $t$, he will observe the reward $R_t = \mu(x_i^T\theta_*) +\eta_t$. $\mu$ is hereby a non-decreasing link function that is $k_\mu$-Lipschitz and $\eta_t$ is a random noise that is $\sigma$-subgaussian. The optimal arm is denoted by $x_*$: $\max_x\mu(x^T\theta_*) = \mu(x_*^T\theta_*)$. For a given strategy, we denote with $x_t$ the arm that is chosen at time $t$.\\
 The immediate regret at time $t$ is defined as 
 $$\Reg_t := \mathbb{E}\left[R_t|X_t=x_*\right]-\mathbb{E}\left[R_t|X_t=x_t\right]$$,
 and the total regret or simply regret is the cumulative sum of immediate regrets
@@ -105,13 +105,13 @@ Given observations $(R_1,X_1), (R_2,X_2),\ldots,(R_{t-1},X_{t-1})$, the least sq
 $$\sum_{k=1}^{t-1}\left(R_k - \mu(X_k^T\theta_*)\right)^2.$$
 Consistency of the LSE in our setting is a standard result \ref{}.
 
-The pseudo maximum likelihood estimator (pseudo-MLE), is defined as the solution $\hat{\theta}_P$ of the equation
+The pseudo maximum likelihood estimator (pseudo-MLE) is defined as the solution $\hat{\theta}_P$ of the equation
 $$\sum_{k=1}^{t-1}(R_k-\mu(X_k^T\hat{\theta}_P))X_k = 0.$$
 The estimator is consistent under very general assumptions, however it requires again that $\dot{\mu}$ is bounded away from zero, which is why this estimator is unfavourable in our setting.
 For self consistency, we briefly explain the rationale behind this estimator.
 If the rewards are actually drawn from a \textit{canonical exponential family}, that means the density for a reference measure is
 $$p_\beta(r) = \exp(r\beta − b(\beta) + c(r)) ,$$
-then the pseudo-MLE is simply the regular maximum likelihood estimator. $\beta$ is a real number, $c$ is a real-valued function and $b$ is twice continuously differentiable. The mean is given by $\mathbb{R}[R] = \dot{b}(\beta)$ ( $=\mu(\beta)$ ) and the tails are indeed subgaussian. 
+then the pseudo-MLE is simply the regular maximum likelihood estimator. $\beta$ is a real number, $c$ is a real-valued function and $b$ is twice continuously differentiable. The mean is given by $\mathbb{R}[R] = \dot{b}(\beta)$ ( $=\mu(\beta)$ ) and the tails are indeed sub-Gaussian. 
 
 An algorithm based on the \textit{optimism in the face of uncertainty} principles is proven to satisfy a bound on the regret of the shape $\tilde{\mathcal{O}}(\frac{k\mu}{c_\mu}\sqrt{T})$. 
 The motivating function for this setting is traditionally the sigmoid function $f(x) = (1+\exp(-x))^{-1}$.
@@ -119,7 +119,7 @@ W.l.o.g. we can reformulate the problem such that $||x||,||\theta_*||\leq 1$ and
 $\mu(x) = (1+\exp(-LR_{\max}x))^{-1}$.
 In this case $k_\mu = \frac{LR}{4}$, $c_\mu^{-1} = \left(\frac{LR}{(e^{0.5LR}+e^{-0.5LR})^2}\right)^{-1} > \frac{\exp(LR)}{LR}$. The constant in front of $T$ grows exponentially with the possible length of $\theta_*$ and the arms, rendering this bound meaningless for most applications.
 
-From now on, we will replace the restriction $\dot{\mu}\geq c_\mu >0$ by simply requiring $\dot{\mu}\geq0$. This is taking the closure of the open cone $\dot{\mu}>0$. Therefore any lower bound on finite time, can be matched arbitrarily close for the open cone, as long as we choose $c_\mu$ sufficiently small.
+From now on, we will replace the restriction $\dot{\mu}\geq c_\mu >0$ by simply requiring $\dot{\mu}\geq0$. This is taking the closure of the open cone $\dot{\mu}>0$. Therefore, any lower bound on finite time can be matched arbitrarily close for the open cone, as long as we choose $c_\mu$ which is sufficiently small.
 Additionally, we relax the constant $k_\mu$ by reducing the Lipschitz-property to a single point, i.e.
 $$\mu(1)-\mu(1-x)\geq kx$$
 For short notation, we will define the set of valid link functions as
@@ -128,12 +128,12 @@ $$M_k := \{\mu \in C_1([-1,1]) | \dot{\mu}\geq 0, \mu(1)-\mu(1-x)\geq kx\}$$
 \section{Lower bounds}\label{lowerBounds}
 .
 We now present the main results of the paper. 
-First a algorithm independent lower bounds for non-decreasing link functions proves that the constants are not mere artifacts of the analysis. 
-Second an algorithm dependent bound proofs that there is an insuperable gap when using the pseudo MLE for sub-gaussian noise.
+First, an algorithm independent lower bounds for non-decreasing link functions proving that the constants are not mere artifacts of the analysis. 
+Second an algorithm dependent bound proves that there is an insuperable gap when using the pseudo MLE for sub-Gaussian noise.
 
 \subsection{Algorithm independent bound}
 \begin{theorem}
-For any finite time horizon $T$ there exists a generalized linear bandit problem with finitely many arms $\mathcal{X}\subset\mathbb{R}^d$, $\mu\in M_k$, such that the regret of any algorithm will be at least of the order
+For any finite time horizon $T$, there exists a generalized linear bandit problem with finitely many arms $\mathcal{X}\subset\mathbb{R}^d$, $\mu\in M_k$, such that the regret of any algorithm will be at least of the order
 $$\Omega\left(T\caret\left(\frac{d+1}{d+3}\right)\right)$$.
 \end{theorem}
 \begin{corollary}
@@ -145,13 +145,13 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
     \begin{align}
         \mu_\epsilon(x) := \max\{0, (x+\epsilon-1)k\}
     \end{align}
-    with $\epsilon$ a small number to be chosen later. For two arms $x_i,x_j$, that have an euclidean distance of at least $||x_i-x_j||\geq\sqrt{2\epsilon}$, simple algebra shows that the scalar product is bounded by $x_i^Tx_j \leq 1-\epsilon$. We want to select the maximum amount $K$ of arms on the unit sphere $\mathcal{S}^{d-1}$, such that each two arms have at least the distance $\sqrt{2\epsilon}$. Results on packing
+    with $\epsilon$ a small number to be chosen later. For two arms $x_i,x_j$, that have an Euclidean distance of at least $||x_i-x_j||\geq\sqrt{2\epsilon}$, simple algebra shows that the scalar product is bounded by $x_i^Tx_j \leq 1-\epsilon$. We want to select the maximum amount $K$ of arms on the unit sphere $\mathcal{S}^{d-1}$, such that every two arms have at least the distance $\sqrt{2\epsilon}$. Results on packing
      unit spheres \cite{shannon59} \cite{wyner65} show that we can find such a set $\mathcal{X}$ with cardinality at least
      \begin{align*}
      K:=|\mathcal{X}| \geq& \left(\frac{1}{\sin(\sqrt{2\epsilon})}+o(1)\right)^{d-1}\\
      &\geq (2\epsilon)\caret\left(-\frac{d-1}{2}\right).
      \end{align*}
-     Choosing $\theta_*\in \mathcal{X}$ at random, this problem is equivalent to the $K$-armed bandit problem where one arm give $\epsilon$ average reward and all other arms $0$.
+     Choosing $\theta_*\in \mathcal{X}$ at random, this problem is equivalent to the $K$-armed bandit problem where one arm gives $\epsilon$ average reward and all other arms $0$.
      
      The lower bound proof of \cite{Auer} implies that as long as $k\epsilon\leq \sqrt{\frac{K}{T}}$, the total regret is lower bounded by $\Omega(k\epsilon T)$. Setting
      $$\epsilon = \frac{1}{2}k\caret\left(-\frac{4}{d+3}\right)T\caret\left(-\frac{2}{d+3}\right)$$
@@ -159,15 +159,15 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
      $$\Omega \left(k\caret\left(\frac{d-1}{d+3}\right)T\caret\left(\frac{d+1}{d+3}\right)\right)$$
     
 \end{proof}
-The exponent $\frac{d+1}{d+3}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be undistinguishable from linear regret. 
-In real world application, we typically deal with relatively large dimensions. 
-Unless we are very careful about the chosen link function, it might be impossible to learn anything meaningfull in a given time.
-That is why we distinguish in section \ref{upperBounds} between different families of link functions, to provide safe-to-use applications.
+The exponent $\frac{d+1}{d+3}$ converges to $1$ as the dimension increases, that means for a finite time horizon and large dimensions, the regret will almost be indistinguishable from linear regret. 
+In real world applications, we typically deal with relatively large dimensions. 
+Unless we are very careful about the chosen link function, it might be impossible to learn anything meaningful in a given time.
+That is why we distinguish in section \ref{upperBounds} between different families of link functions to provide safe-to-use applications.
 
 \subsection{Pseudo Maximum-Likelihood based lower bound}
 For simplicity, we assume a simple Explore then Commit algorithm in two dimensions. 
-We show that for any time horizon $T$, we can construct a problem where with constant probability the pseudo MLE choses an arm not better than random.
-During the exploration, we suffer an regret even larger than what the general lower bound predicts.
+We show that for any time horizon $T$, we can construct a problem where with constant probability the pseudo MLE chooses an arm not better than random.
+During the exploration, we suffer a regret even larger than what the general lower bound predicts.
 \begin{theorem}
 For any finite time horizon $T$, there exists a generalized linear bandit problem such that after $T$ uniform exploration steps, the regret for playing the optimal arm for $\hat{\theta}$ will be $T^{-\frac{1}{4}}$ with a $T$ independent constant probability.
 \end{theorem}
@@ -188,7 +188,7 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
     $$\sum_{k=1}^T\left(\mu(x_k^T\theta_*)-\mu(x_k^T\hat{\theta}_P)+\eta_k\right)x_k=0.$$
     $$\sum_{k=1}^T\mu(x_k^T\hat{\theta}_P)x_k = \sum_{k=1}^T\mu(x_k^T\theta_*)x_k + \boldsymbol{\eta},$$
     with $\boldsymbol{\eta}\sim \mathcal{N}\left(0,\sum_{k=1}^Tx_kx_k^T)\right)$.
-    We argue that this estimator can in average not be better, than if we would perform a continuous exploration.
+    We argue that this estimator can, on average, not be better than if we would perform a continuous exploration.
     By choosing an arbitrary uniform distribution of points on the circle, we are adding additional noise over continuous exploration. We are looking at the estimator given by
     $$\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\hat{\theta}_C)x\,dx = \frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx + \boldsymbol{\eta},$$
     with $\boldsymbol{\eta}\sim \mathcal{N}(0,\frac{T}{2\pi}\int_{\mathcal{S}^1}xx^T\,dx)=\mathcal{N}(0,T\mathbf{I})$.
@@ -202,7 +202,7 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
     \end{align*}
     The arm chosen after the Exploration phase is therefore:
     $$\hat{x} = \frac{\hat{\theta}_C}{||\hat{\theta}_C||}=\frac{(c_\epsilon T+\eta_1)\binom{1}{0}+\eta_2\binom{0}{1}}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}.$$
-    We are interested for a bound on the immediate regret for choosing $\hat{x}$. Given that $\eta_1,\eta_2\sim \mathcal{N}(0,T)$ i.i.d, with probability at least $\frac{1}{4}$, we have $\eta_1\leq0$ and $\eta_2 \geq T$.
+    We are interested for a bound on the immediate regret for choosing $\hat{x}$. Given that $\eta_1,\eta_2\sim \mathcal{N}(0,T)$ i.i.d, with a probability of at least $\frac{1}{4}$, we have $\eta_1\leq0$ and $\eta_2 \geq T$.
     $$
     \hat{x}^T\theta_* = \frac{c_\epsilon T+\eta_1}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}\leq \frac{c_\epsilon T}{\sqrt{c^2_\epsilon T^2 + T}}
     $$
@@ -210,7 +210,7 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
     $$
     \hat{x}^T\theta_*\leq \frac{\epsilon^{\frac{3}{2}}T}{\sqrt{\epsilon^3T^2+T}}\leq \frac{1}{\sqrt{2}}
     $$
-    For $T\geq $, it holdts that $\frac{1}{\sqrt{2}}<1-\epsilon$. With probability at least $\frac{1}{4}$, the estimator will  choose an arm that suffers $\epsilon$ immediate regret. Therefore even if Exploit-then-Commit would spend less than the full for exploration, the total regret will still be of order $\Omega(\epsilon T)=\Omega (T^{\frac{2}{3}})$. There exists a gap to the general lower bound of order $\Omega (T^{\frac{2}{3}})$. We will show in the next section, that employing LSE performs better.
+    For $T\geq $, it holds that $\frac{1}{\sqrt{2}}<1-\epsilon$. With a probability of at least $\frac{1}{4}$, the estimator will choose an arm that suffers $\epsilon$ immediate regret. Therefore even if Exploit-then-Commit would spend less than $T$ time-steps for exploration, the total regret will still be of order $\Omega(\epsilon T)=\Omega (T^{\frac{2}{3}})$. There exists a gap in the general lower bound of order $\Omega (T^{\frac{2}{3}})$. We will show in the next section, that employing LSE performs better.
     
     
     
@@ -219,16 +219,16 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
 
 The pseudo-MLE based approach will suffer a regret that is higher than the general lower bound. In the following section, we show that the LSE does not show this behaviour, proving a true gap between the two estimators.
 \begin{remark}
-In section 4, we will look at point symmetric functions $\mu$ for simpler analysis. We want to add that all lower bounds can be equivalently proven for a symmetric $\mu(x) = \mu_\epsilon(x)-\mu_\epsilon(-x)$.
+In section 4, we will look at point symmetric functions $\mu$ for a simpler analysis. We want to add that all lower bounds can be equivalently proven for a symmetric $\mu(x) = \mu_\epsilon(x)-\mu_\epsilon(-x)$.
 \end{remark}
 \section{Upper bounds}\label{upperBounds}
 The lower bound given in the previous section is of a relatively odd nature. 
-To our best knowledge, the hasn't been a similar exponent derived for any bandit related lower bound.
+To our best knowledge, there hasn't been a similar exponent derived for any bandit related lower bound.
 This naturally raises the question, whether this is even a tight lower bound.
-While for practical purposes, this is of little relevance. Even matching algorithms would be prohibitive with an almost linear regret. The question is however of academic interest.
-Secondly, it is essential for provide well behaving function that are guaranteed to suffer $\sqrt{T}$ regret instead.
+For practical purposes, this is of little relevance. Even matching algorithms would be prohibitive with an almost linear regret. The question is however of academic interest.
+Secondly, it is essential for providing well-behaving functions that are guaranteed to suffer $\sqrt{T}$ regret instead.
 
-We are not yet able to provide a complete answer to these question. 
+We are not yet able to provide a complete answer to these questions. 
 Based on a slightly simplified setting, we can show that
 \begin{itemize}
 \item the lower bound is indeed tight up to log factors
@@ -259,7 +259,7 @@ $$
 \operatorname{Reg}(T) \leq c T^{\left(\frac{d+1}{d+3}\right)}\cdot(\kappa\sigma^2\left(\log(T)^2+\log(\delta^{-1})\right))\color{red}^p\color{black}
 $$
 \end{theorem}
-While this is not an upper bound for any link function, it is wide enough to proof that a true gap exists between pseudo-MLE and LSE in this setting. The second theorem answers the question about safe-to-use function and is relevant for practical applications
+While this is not an upper bound for any link function, it is wide enough to prove that a true gap exists between pseudo-MLE and LSE in this setting. The second theorem answers the question about safe-to-use functions and is relevant for practical applications
 \begin{theorem}
 For any GLB problem with $\mathcal{X}=\mathcal{B}^{d}_1, \mu\in M_k^2$ and $||\theta_*||=1$, an Exploit-then-Commit algorithm for a fixed time $T$ will with probability $1-\delta$ suffer a regret that is not larger than
 $$
@@ -324,7 +324,7 @@ Using this lemma, we obtain
 Combining this with Lemma \ref{intapprox} finalizes the proof.
 \end{proof}
 \paragraph{Step 2:} lower bounds on the difference $L(\hat{\theta})-L(\theta_*)$
-First we need a lemma to ensure, the length of $\hat{\theta}$ doesn't matter
+The following Lemma ensures that it is sufficient to bound the normalized $\hat{\theta}$
 \begin{lemma}\label{normthetabound}
     Let $\tilde{\theta}$ be the vector $\hat{\theta}$ rescaled such that it matches the length of $\theta_*$. Then for any $\mu\in M_k$
     $$L(\hat{\theta})-L(\theta_*) \geq \frac{1}{2}(L(\tilde{\theta})-L(\theta_*)).$$
@@ -362,12 +362,28 @@ For the value inside the integral, it only matters where $x$ intersects the span
             \geq \frac{1}{\sqrt{2k}}\max\{(1-\cos{\beta})k,\mu(1)-\mu(0)\}(\mu(1)-\mu(0))^\frac{3}{2}
         \end{align*}
     \end{lemma}
+    The function $\mu_\alpha(x)=\mu(\alpha x)$ is per definition in $M_k^1$, additionally $\mu_\alpha(1)-\mu_\alpha(0)\geq \max\{0,\mu(1)-\mu(0)-(1-\alpha)k\}$. We will use $\epsilon$, such that $\mu(1)-\mu(0)=\epsilon k$.
+    \begin{align*}
+        \int_{0}^{2\pi}\left(\mu(\alpha\cos(x-\frac{\beta}{2}))-\mu(\alpha \cos(x+\frac{\beta}{2}))\right)^2\,dx\\
+        \leq \frac{k^\frac{5}{2}\max\{0,1-\cos(\beta),\epsilon-1+\alpha\}\max\{0,\epsilon-1+\alpha\}^{\frac{3}{2}}}{\sqrt{2k}}\\
+    \end{align*}
+    We will look at the two cases $1-\cos(\beta)\geq \frac{1}{2}\epsilon$ and vice versa. First $\geq$, then 
+    \begin{align*}
+        &\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\int_{0}^{2\pi}\, dx\right.\nonumber\\
+    &\left.\left(\mu(\alpha\cos(x-\frac{\beta}{2}))-\mu(\alpha \cos(x+\frac{\beta}{2}))\right)^2\right]\\
+    \geq& \frac{k^\frac{5}{2}}{\sqrt{2}}\int_{1-\frac{\epsilon}{2}}^1 (1-\alpha^2)^{\frac{d-4}{2}}\alpha
+    (\epsilon-1+\alpha)^\frac{5}{2}\\
+    =&\frac{k^\frac{5}{2}}{\sqrt{2}}\int_{0}^{\frac{\epsilon}{2}} (2\alpha-\alpha^2)^{\frac{d-4}{2}}(1-\alpha)
+    (\epsilon-\alpha)^\frac{5}{2}\\
+    =&\frac{k^\frac{5}{2}}{\sqrt{2}}\int_{0}^{1} (1-\frac{\epsilon}{4}\alpha^2)^{\frac{d-4}{2}}(1-\frac{\epsilon}{2}\alpha)
+    (1-\frac{1}{2}\alpha)^\frac{5}{2}\frac{1}{2}\epsilon^{\frac{d+3}{2}}\\
+    \end{align*}
     Using this lemma, we can upper bound \eqref{dbound} 
     \begin{align*}
         \geq&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\right.\\
     &\left.(1-\cos{\beta})(\mu(\alpha)-\mu(0))^\frac{3}{2}\right]
     \end{align*}
-    Definition of $M_k$, implies that $\mu(\alpha)\geq \mu(1)-(1-\alpha)k$
+    Definition of $M_k$ implies that $\mu(\alpha)\geq \mu(1)-(1-\alpha)k$
     \begin{align*}
         \geq&2\frac{|\mathcal{S}^{d-3}|}{|\mathcal{S}^{d-1}|}\int_{0}^{1}\,d\alpha\left[(1-\alpha^2)^{\frac{d-4}{2}}\alpha\right.\\
     &\left.(1-\cos{\beta})\max\{0,\mu(1)-\mu(0)-(1-\alpha)k\}^\frac{3}{2}\right]
@@ -421,24 +437,24 @@ Concavity of $\mu|_{[0,1]}$ implies $\mu(\alpha)-\mu(0)\geq \alpha(\mu(1)-\mu(0)
  &\min\{\uc \epsilon\caret\left(-\frac{d-1}{2}\right)T\caret\left(\frac{d+1}{d+3}\right),2\epsilon\}\\
  \leq&\uc T\caret\left(-\frac{2}{d+3}\right) 
  \end{align*}
- The first term in the minimum is decreasing in $\epsilon$, while the second term is increasing. Therefore the minimum is obtained if both terms are equal. Playing an arm with immediate regret smaller then $T\caret\left(-\frac{2}{d+3}\right) $ for $T$ steps results in a regret of
+ The first term in the minimum is decreasing in $\epsilon$, while the second term is increasing. Therefore the minimum is obtained if both terms are equal. Playing an arm with immediate regret smaller than $T\caret\left(-\frac{2}{d+3}\right) $ for $T$ steps results in a regret of
  $$\Reg(T) \leq \uc T\caret\left(\frac{d+1}{d+3}\right)$$
 We set the number of exploration steps, such that with an average immediate regret of $\epsilon$, we suffer exactly the same total regret during exploration, which concludes the proof.
 \end{proof}
 
 \begin{proof}[Proof of theorem 4]
-  The proof goes analogous to theorem 3. We combine Lemma 6, theorem 8 and Lemma 5. Setting $\mu(1)-\mu(0)=\epsilon$, $\mu(1)-\mu(\tilde{\theta}^T\theta_*)=\lambda$ and using $\epsilon^{-1}T\caret\left(\frac{1}{2}\right)$ many exploration steps, it holds
+  The proof is analogous to theorem 3. We combine Lemma 6, theorem 8 and Lemma 5. Setting $\mu(1)-\mu(0)=\epsilon$, $\mu(1)-\mu(\tilde{\theta}^T\theta_*)=\lambda$ and using $\epsilon^{-1}T\caret\left(\frac{1}{2}\right)$ many exploration steps, it holds
  \begin{align*}
      \uc\epsilon T\caret\left(-\frac{1}{2}\right)  \geq \lambda \epsilon\\
      \lambda \leq \uc T\caret\left(-\frac{1}{2}\right)\\
  \end{align*}
- Continuing for $T$ timesteps with this immediate regret bounds the total regret to
+ Continuing for $T$ time steps with this immediate regret bounds the total regret to
  $$\Reg(T) \leq \sqrt{T}+\uc \sqrt{T} \leq \uc\sqrt{T}.$$
 \end{proof}
 \section{Discussion}
-We have proven that the generalized linear bandit problem, how it was originally proposed, can make it next to impossible to learn a good arm in a finite time. This should be a reminder to take constants seriously that tend to grow to infinity for interesting applications. We have good reason to belief that our lower bounds are tight, even though we assumed a restricted problem. In order to get a general lower bound, one would need to take the following steps.
+We have proven that for the generalized linear bandit problem, it can be next to impossible to learn a good arm in a finite time. This should be a reminder to take constants seriously as they tend to grow to infinity for interesting applications. We have good reason to believe that our lower bounds are tight, even though we assumed a restricted problem. In order to get a general lower bound, one would need to take the following steps.
 \begin{itemize}
-\item Proof lemma \ref for all $\mu$. This is likely to hold true as convex function appear to be the worst case.
+\item Proof lemma \ref for all $\mu$. This is likely to hold true as the convex function appears to be the worst case.
 \item Replace the fixed exploration time by a stopping time criteria if only an upper bound of $||\theta_*||$ is available instead of the exact value.
 \end{itemize}
 However this direction of research cannot lead to applicable algorithms, as we have shown in our lower bound. Therefore we will pursue the restriction to convex-concave link functions such as the sigmoid. Our results give hope that those functions might always perform better than the linear function, including all constants in the bound. We will work on ... Tompson Sampling ... 
