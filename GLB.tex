@@ -34,6 +34,12 @@
 }
 
 \newcommand{\whp}[1]{\stackrel{\mathclap{\normalfont\mbox{w.h.p.}}}{#1}}
+
+%By Shuai
+\usepackage[usenames]{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\newcommand{\shuai}[1]{{\color{blue!50!black} [\text{Shuai:} #1]}}
+
 \begin{document}
 
 % If your paper is accepted and the title of your paper is very long,
@@ -105,7 +111,7 @@ Given observations $(R_1,X_1), (R_2,X_2),\ldots,(R_{t-1},X_{t-1})$, the least sq
 $$\sum_{k=1}^{t-1}\left(R_k - \mu(X_k^T\theta_*)\right)^2.$$
 Consistency of the LSE in our setting is a standard result \ref{}.
 
-The pseudo maximum likelihood estimator (pseudo-MLE) is defined as the solution $\hat{\theta}_P$ of the equation
+The pseudo maximum likelihood estimator (pseudo-MLE) \shuai{Why do you call it "pseudo"? It is MLE.} is defined as the solution $\hat{\theta}_P$ of the equation
 $$\sum_{k=1}^{t-1}(R_k-\mu(X_k^T\hat{\theta}_P))X_k = 0.$$
 The estimator is consistent under very general assumptions, however it requires again that $\dot{\mu}$ is bounded away from zero, which is why this estimator is unfavourable in our setting.
 For self consistency, we briefly explain the rationale behind this estimator.
@@ -134,6 +140,7 @@ Second an algorithm dependent bound proves that there is an insuperable gap when
 \subsection{Algorithm independent bound}
 \begin{theorem}
 For any finite time horizon $T$, there exists a generalized linear bandit problem with finitely many arms $\mathcal{X}\subset\mathbb{R}^d$, $\mu\in M_k$, such that the regret of any algorithm will be at least of the order
+\shuai{Why don't use $T^{(d+1)/(d+3)}$?}
 $$\Omega\left(T\caret\left(\frac{d+1}{d+3}\right)\right)$$.
 \end{theorem}
 \begin{corollary}
@@ -153,6 +160,7 @@ It is impossible to derive a $c_\mu$ independent upper bound for the generalized
      \end{align*}
      Choosing $\theta_*\in \mathcal{X}$ at random, this problem is equivalent to the $K$-armed bandit problem where one arm gives $\epsilon$ average reward and all other arms $0$.
      
+     \shuai{What is the reference for Auer?}
      The lower bound proof of \cite{Auer} implies that as long as $k\epsilon\leq \sqrt{\frac{K}{T}}$, the total regret is lower bounded by $\Omega(k\epsilon T)$. Setting
      $$\epsilon = \frac{1}{2}k\caret\left(-\frac{4}{d+3}\right)T\caret\left(-\frac{2}{d+3}\right)$$
      satisfies this inequality. So the total in regret will be at least of the order
@@ -163,6 +171,8 @@ The exponent $\frac{d+1}{d+3}$ converges to $1$ as the dimension increases, that
 In real world applications, we typically deal with relatively large dimensions. 
 Unless we are very careful about the chosen link function, it might be impossible to learn anything meaningful in a given time.
 That is why we distinguish in section \ref{upperBounds} between different families of link functions to provide safe-to-use applications.
+
+\shuai{This part is correct as long as the statement of Auer is correct.}
 
 \subsection{Pseudo Maximum-Likelihood based lower bound}
 For simplicity, we assume a simple Explore then Commit algorithm in two dimensions. 
@@ -185,21 +195,25 @@ The worst case regret for this algorithm is at least $T^{\frac{3}{4}}$.
     $
     \end{itemize}
     After $T$ steps of uniform exploration, the psuedo-MLE is the solution to
-    $$\sum_{k=1}^T\left(\mu(x_k^T\theta_*)-\mu(x_k^T\hat{\theta}_P)+\eta_k\right)x_k=0.$$
-    $$\sum_{k=1}^T\mu(x_k^T\hat{\theta}_P)x_k = \sum_{k=1}^T\mu(x_k^T\theta_*)x_k + \boldsymbol{\eta},$$
-    with $\boldsymbol{\eta}\sim \mathcal{N}\left(0,\sum_{k=1}^Tx_kx_k^T)\right)$.
+    \shuai{Here I suggest to use index by $t$, not $k$. And the slope in last section by $\alpha$, not $k$. There are small $k$ and capital $K$, easy to confuse. If you agree, I can help modify those notations.}
+    $$\sum_{k=1}^T\left(\mu(x_k^\top\theta_*)-\mu(x_k^\top\hat{\theta}_P)+\eta_k\right)x_k=0.$$
+    $$\sum_{k=1}^T\mu(x_k^\top\hat{\theta}_P)x_k = \sum_{k=1}^T\mu(x_k^\top\theta_*)x_k + \boldsymbol{\eta},$$
+    with $\boldsymbol{\eta}\sim \mathcal{N}\left(0,\sum_{k=1}^Tx_kx_k^\top\right)$.
     We argue that this estimator can, on average, not be better than if we would perform a continuous exploration.
     By choosing an arbitrary uniform distribution of points on the circle, we are adding additional noise over continuous exploration. We are looking at the estimator given by
-    $$\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\hat{\theta}_C)x\,dx = \frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx + \boldsymbol{\eta},$$
+    $$\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^\top\hat{\theta}_C)x\,dx = \frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^\top\theta_*)x\,dx + \boldsymbol{\eta},$$
     with $\boldsymbol{\eta}\sim \mathcal{N}(0,\frac{T}{2\pi}\int_{\mathcal{S}^1}xx^T\,dx)=\mathcal{N}(0,T\mathbf{I})$.
     The left hand side is co-linear to $\hat{\theta}_C$ due to symmetry, the integral on the right hand side can be explicitly solved.
     \begin{align*}
-    &\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^T\theta_*)x\,dx = \frac{T}{2\pi}\int_{0}^{2\pi}\mu(\cos(x))\cos(x)\theta_*\,dx \\
-    =&\frac{T}{\pi}\theta_*\int_{0}^{\pi}\mu(\cos(x))\cos(x)\,dx=\frac{T}{\pi}\theta_*\int_{0}^{1}\frac{\mu(x)x}{\sqrt{1-x^2}}\,dx\\
-    =&\frac{T}{\pi}\theta_*\int_{1-\epsilon}^{1}\frac{x-x^2}{\sqrt{1-x^2}}\,dx\\
-    =&\frac{T}{2\pi}\left(\sin^{-1}(1-\epsilon)-\frac{\pi}{2}+(1+\epsilon)\sqrt{2\epsilon-\epsilon^2}\right)\theta_*\\
+    &\frac{T}{2\pi}\int_{\mathcal{S}^1}\mu(x^\top\theta_*)x\,dx = \frac{T}{2\pi}\int_{0}^{2\pi}\mu(\cos(x))\cos(x)\theta_*\,dx \\
+    =&\frac{T}{\pi}\theta_*\int_{0}^{\pi}\mu(\cos(x))\cos(x)\,dx=\frac{T}{\pi}\theta_*\int_{-1}^{1}\frac{\mu(x)x}{\sqrt{1-x^2}}\,dx\\
+    =&\frac{T}{\pi}\theta_*\int_{1-\epsilon}^{1}\frac{(x + \epsilon - 1)x}{\sqrt{1-x^2}}\,dx \\
+    =&\frac{T}{2\pi}\left(\sin^{-1}(1-\epsilon)-\frac{\pi}{2} - (1 - \epsilon)\sqrt{2\epsilon-\epsilon^2}\right)\theta_*\\
     =&c_\epsilon T\theta_*
     \end{align*}
+    
+    \shuai{How do you get the integral of $\int_{1-\epsilon}^{1} \frac{x^2}{\sqrt{1-x^2}}dx$?}
+    
     The arm chosen after the Exploration phase is therefore:
     $$\hat{x} = \frac{\hat{\theta}_C}{||\hat{\theta}_C||}=\frac{(c_\epsilon T+\eta_1)\binom{1}{0}+\eta_2\binom{0}{1}}{\sqrt{(c_\epsilon T+\eta_1)^2+\eta_2^2}}.$$
     We are interested for a bound on the immediate regret for choosing $\hat{x}$. Given that $\eta_1,\eta_2\sim \mathcal{N}(0,T)$ i.i.d, with a probability of at least $\frac{1}{4}$, we have $\eta_1\leq0$ and $\eta_2 \geq T$.
